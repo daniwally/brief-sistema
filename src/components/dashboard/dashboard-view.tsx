@@ -241,7 +241,7 @@ export function DashboardView() {
         <>
           {/* Monthly total + Pending alerts */}
           {(() => {
-            const mesLabel = new Date().toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+            const mesLabel = "total";
             let totalUsdMes = 0;
             if (rates && data.facturacionMes) {
               for (const m of MONEDAS) {
