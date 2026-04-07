@@ -45,7 +45,8 @@ function isEnMora(fecha: string | undefined, estado: string): boolean {
 function diasMora(fecha: string): number {
   const emision = new Date(fecha + "T00:00:00");
   const hoy = new Date();
-  return Math.floor((hoy.getTime() - emision.getTime()) / (1000 * 60 * 60 * 24));
+  const totalDias = Math.floor((hoy.getTime() - emision.getTime()) / (1000 * 60 * 60 * 24));
+  return totalDias - 31;
 }
 
 export function FacturaTable() {
