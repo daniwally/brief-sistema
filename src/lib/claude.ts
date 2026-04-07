@@ -9,7 +9,7 @@ Extraé los siguientes campos de este PDF de factura. Devolvé SOLAMENTE JSON v�
   "numero": "número de factura",
   "neto": importe neto (subtotal sin impuestos) como número,
   "impuestos": monto total de impuestos como número,
-  "detalle_impuestos": "desglose de impuestos, ej: IVA 21%: $2100, IIBB 3%: $300",
+  "detalle_impuestos": "desglose de impuestos, un impuesto por linea separado por \\n, ej: IVA 21%: $2100\\nIIBB 3%: $300\\nPercepciones: $150",
   "monto": importe total (neto + impuestos) como número,
   "moneda": "ARS" | "CLP" | "PYG" | "USD",
   "fecha": "YYYY-MM-DD",
@@ -26,7 +26,7 @@ IMPORTES:
 - "neto" es el subtotal ANTES de impuestos
 - "impuestos" es la SUMA de todos los impuestos (IVA, IIBB, percepciones, etc.)
 - "monto" es el TOTAL final (neto + impuestos)
-- "detalle_impuestos" es un texto con el desglose: qué impuesto y cuánto
+- "detalle_impuestos" es un texto con cada impuesto en una linea separada por \n (salto de linea). Ej: "IVA 21%: $2100\nIIBB 3%: $300"
 - Si la factura no separa neto de impuestos, poné el total en "monto" y null en "neto" e "impuestos"
 
 REGLAS PARA DETECTAR MONEDA:
@@ -87,7 +87,7 @@ Extraé los siguientes campos de este PDF de comprobante de pago/transferencia. 
 {
   "neto": importe neto (subtotal sin impuestos) como número,
   "impuestos": monto total de impuestos como número,
-  "detalle_impuestos": "desglose de impuestos, ej: IVA 21%: $2100, Retenciones: $500",
+  "detalle_impuestos": "desglose de impuestos, un impuesto por linea separado por \\n, ej: IVA 21%: $2100\\nIIBB 3%: $300\\nRetenciones: $500",
   "monto": importe total del pago como número,
   "moneda": "ARS" | "CLP" | "PYG" | "USD",
   "fecha": "YYYY-MM-DD",
@@ -102,7 +102,7 @@ IMPORTES:
 - "neto" es el subtotal ANTES de impuestos/retenciones
 - "impuestos" es la SUMA de todos los impuestos o retenciones
 - "monto" es el TOTAL final
-- "detalle_impuestos" es un texto con el desglose de cada impuesto/retencion
+- "detalle_impuestos" es un texto con cada impuesto en una linea separada por \n (salto de linea). Cada linea: nombre del impuesto: monto. Ej: "IVA 21%: $2100\nIIBB 3%: $300"
 - Si el comprobante no separa neto de impuestos, poné el total en "monto" y null en "neto" e "impuestos"
 
 REGLAS PARA DETECTAR MONEDA:
