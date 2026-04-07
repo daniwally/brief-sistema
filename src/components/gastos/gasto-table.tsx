@@ -77,7 +77,7 @@ export function GastoTable() {
   }
 
   async function deleteGasto(id: string) {
-    if (!confirm("¿Eliminar este gasto?")) return;
+    if (!confirm("¿Eliminar esta compra?")) return;
     await fetch(`/api/gastos/${id}`, { method: "DELETE" });
     setGastos((prev) => prev.filter((g) => g.id !== id));
   }
@@ -86,11 +86,11 @@ export function GastoTable() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Gastos</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Compras</h2>
           <p className="text-sm text-gray-400">Registro de compras y gastos</p>
         </div>
         <Link href="/gastos/nuevo">
-          <Button className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm">+ Nuevo Gasto</Button>
+          <Button className="rounded-xl bg-violet-500 hover:bg-violet-600 text-white shadow-sm">+ Nueva Compra</Button>
         </Link>
       </div>
 
@@ -115,15 +115,15 @@ export function GastoTable() {
         <p className="text-muted-foreground py-8 text-center">Cargando...</p>
       ) : error ? (
         <div className="text-center py-8 space-y-2">
-          <p className="text-red-500">Error al cargar gastos</p>
+          <p className="text-red-500">Error al cargar compras</p>
           <p className="text-xs text-muted-foreground font-mono break-all max-w-lg mx-auto">{error}</p>
         </div>
       ) : gastos.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p>No hay gastos registrados</p>
+          <p>No hay compras registradas</p>
           <Link href="/gastos/nuevo">
             <Button variant="outline" className="mt-4">
-              Registrar primer gasto
+              Registrar primera compra
             </Button>
           </Link>
         </div>

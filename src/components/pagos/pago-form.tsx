@@ -108,11 +108,11 @@ export function PagoForm() {
       );
       if (match) {
         setSelectedFacturaId(match.id);
-        toast.success(`Factura ${match.fields.Numero} detectada automaticamente`);
+        toast.success(`Venta ${match.fields.Numero} detectada automaticamente`);
       }
     }
 
-    toast.success("Datos extraidos del comprobante. Revisa y selecciona la factura.");
+    toast.success("Datos extraidos del comprobante. Revisa y selecciona la venta.");
   }
 
   function selectFactura(facturaId: string | null) {
@@ -132,7 +132,7 @@ export function PagoForm() {
       return;
     }
     if (!selectedFacturaId) {
-      toast.error("Debes seleccionar una factura impaga para vincular el pago");
+      toast.error("Debes seleccionar una venta impaga para vincular el pago");
       return;
     }
 
@@ -172,7 +172,7 @@ export function PagoForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Estado: "Pagado" }),
       });
-      toast.success("Factura marcada como Pagada");
+      toast.success("Venta marcada como Pagada");
     }
 
     toast.success("Pago registrado");
@@ -194,11 +194,11 @@ export function PagoForm() {
 
       {/* Facturas impagas para vincular */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold border-b pb-2">Vincular a Factura Impaga</h3>
+        <h3 className="text-lg font-semibold border-b pb-2">Vincular a Venta Impaga</h3>
         {loadingFacturas ? (
           <p className="text-sm text-gray-400">Cargando facturas impagas...</p>
         ) : facturasImpagas.length === 0 ? (
-          <p className="text-sm text-gray-400">No hay facturas impagas</p>
+          <p className="text-sm text-gray-400">No hay ventas impagas</p>
         ) : (
           <div className="space-y-2 max-h-60 overflow-y-auto">
             {facturasImpagas.map((f) => (
@@ -207,8 +207,8 @@ export function PagoForm() {
                 onClick={() => selectFactura(selectedFacturaId === f.id ? null : f.id)}
                 className={`p-3 rounded-xl border cursor-pointer transition-all ${
                   selectedFacturaId === f.id
-                    ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                    : "border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/30"
+                    ? "border-violet-500 bg-violet-50 ring-1 ring-violet-500"
+                    : "border-gray-200 hover:border-violet-300 hover:bg-violet-50/30"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -226,7 +226,7 @@ export function PagoForm() {
                   </div>
                 </div>
                 {selectedFacturaId === f.id && (
-                  <p className="text-xs text-emerald-600 mt-1">Se marcara como Pagada al guardar</p>
+                  <p className="text-xs text-violet-600 mt-1">Se marcara como Pagada al guardar el pago</p>
                 )}
               </div>
             ))}
@@ -268,7 +268,7 @@ export function PagoForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label>Impuestos</Label>
+          <Label>Imp. /Ret.</Label>
           <Input
             type="text"
             inputMode="decimal"
@@ -294,7 +294,7 @@ export function PagoForm() {
       </div>
 
       <div className="space-y-2">
-        <Label>Detalle de impuestos</Label>
+        <Label>Detalle de imp. /ret.</Label>
         <Textarea
           placeholder="Ej: IVA 21%: $2100, Retenciones: $500"
           value={form.DetalleImpuestos}
@@ -364,7 +364,7 @@ export function PagoForm() {
       </div>
 
       <div className="flex gap-4">
-        <Button type="submit" disabled={loading} className="bg-emerald-500 hover:bg-emerald-600 text-white">
+        <Button type="submit" disabled={loading} className="bg-violet-500 hover:bg-violet-600 text-white">
           {loading ? "Guardando..." : "Registrar Pago"}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.push("/pagos")}>

@@ -78,17 +78,17 @@ export function GastoForm() {
 
     const res = await fetch("/api/gastos", { method: "POST", body: formData });
     if (res.ok) {
-      toast.success("Gasto registrado");
+      toast.success("Compra registrada");
       router.push("/gastos");
     } else {
-      toast.error("Error al guardar el gasto");
+      toast.error("Error al guardar la compra");
     }
     setLoading(false);
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      <h2 className="text-2xl font-bold">Nuevo Gasto</h2>
+      <h2 className="text-2xl font-bold">Nueva Compra</h2>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -210,8 +210,8 @@ export function GastoForm() {
       </div>
 
       <div className="flex gap-4">
-        <Button type="submit" disabled={loading}>
-          {loading ? "Guardando..." : "Guardar Gasto"}
+        <Button type="submit" disabled={loading} className="bg-violet-500 hover:bg-violet-600 text-white">
+          {loading ? "Guardando..." : "Guardar Compra"}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.push("/gastos")}>
           Cancelar

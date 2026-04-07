@@ -122,17 +122,17 @@ export function FacturaForm() {
 
     const res = await fetch("/api/facturas", { method: "POST", body: formData });
     if (res.ok) {
-      toast.success("Factura registrada");
+      toast.success("Venta registrada");
       router.push("/facturas");
     } else {
-      toast.error("Error al guardar la factura");
+      toast.error("Error al guardar la venta");
     }
     setLoading(false);
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      <h2 className="text-2xl font-bold">Nueva Factura</h2>
+      <h2 className="text-2xl font-bold">Nueva Venta</h2>
 
       <PdfUploader onExtracted={handleExtracted} />
 
@@ -215,7 +215,7 @@ export function FacturaForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label>Impuestos</Label>
+          <Label>Imp. /Ret.</Label>
           <Input
             type="text"
             inputMode="decimal"
@@ -241,7 +241,7 @@ export function FacturaForm() {
       </div>
 
       <div className="space-y-2">
-        <Label>Detalle de impuestos</Label>
+        <Label>Detalle de imp. /ret.</Label>
         <Textarea
           placeholder="Ej: IVA 21%: $2100, IIBB 3%: $300, Percepciones: $150"
           value={form.DetalleImpuestos}
@@ -315,8 +315,8 @@ export function FacturaForm() {
       </div>
 
       <div className="flex gap-4">
-        <Button type="submit" disabled={loading}>
-          {loading ? "Guardando..." : "Guardar Factura"}
+        <Button type="submit" disabled={loading} className="bg-violet-500 hover:bg-violet-600 text-white">
+          {loading ? "Guardando..." : "Guardar Venta"}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.push("/facturas")}>
           Cancelar

@@ -139,7 +139,7 @@ export function FacturaTable() {
       if (factura) {
         const pago = findPago(factura, pagos);
         if (!pago) {
-          toast.error("No se puede marcar como Pagada sin un comprobante de pago registrado. Registra un pago primero.", { duration: 5000 });
+          toast.error("No se puede marcar como Pagada sin un comprobante de pago registrado. Registra un pago en la seccion Pagos.", { duration: 5000 });
           return;
         }
       }
@@ -161,7 +161,7 @@ export function FacturaTable() {
   }
 
   async function deleteFactura(id: string) {
-    if (!confirm("¿Eliminar esta factura?")) return;
+    if (!confirm("¿Eliminar esta venta?")) return;
     await fetch(`/api/facturas/${id}`, { method: "DELETE" });
     setFacturas((prev) => prev.filter((f) => f.id !== id));
   }
@@ -170,11 +170,11 @@ export function FacturaTable() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Facturas</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Ventas</h2>
           <p className="text-sm text-gray-400">Facturacion AR / CL / PY</p>
         </div>
         <Link href="/facturas/nueva">
-          <Button className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm">+ Nueva Factura</Button>
+          <Button className="rounded-xl bg-violet-500 hover:bg-violet-600 text-white shadow-sm">+ Nueva Venta</Button>
         </Link>
       </div>
 
@@ -200,13 +200,13 @@ export function FacturaTable() {
           <div className="flex items-center gap-4 pt-2 border-t border-gray-100">
             <span className="text-xs text-gray-400">Cotizacion Ref.:</span>
             <span className="text-xs font-medium text-gray-600">
-              USD/ARS <span className="text-emerald-600 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+              USD/ARS <span className="text-violet-600 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
             </span>
             <span className="text-xs font-medium text-gray-600">
-              USD/CLP <span className="text-emerald-600 font-mono">$ {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+              USD/CLP <span className="text-violet-600 font-mono">$ {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
             </span>
             <span className="text-xs font-medium text-gray-600">
-              USD/PYG <span className="text-emerald-600 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
+              USD/PYG <span className="text-violet-600 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
             </span>
             <span className="text-[10px] text-gray-300">dolarhoy.com</span>
           </div>
@@ -217,15 +217,15 @@ export function FacturaTable() {
         <p className="text-muted-foreground py-8 text-center">Cargando...</p>
       ) : error ? (
         <div className="text-center py-8 space-y-2">
-          <p className="text-red-500">Error al cargar facturas</p>
+          <p className="text-red-500">Error al cargar ventas</p>
           <p className="text-xs text-muted-foreground font-mono break-all max-w-lg mx-auto">{error}</p>
         </div>
       ) : facturas.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p>No hay facturas registradas</p>
+          <p>No hay ventas registradas</p>
           <Link href="/facturas/nueva">
             <Button variant="outline" className="mt-4">
-              Registrar primera factura
+              Registrar primera venta
             </Button>
           </Link>
         </div>
@@ -296,7 +296,7 @@ export function FacturaTable() {
                         />
                         {pago && (
                           <p
-                            className="text-[10px] text-emerald-600 mt-0.5 cursor-default"
+                            className="text-[10px] text-violet-600 mt-0.5 cursor-default"
                             onMouseEnter={(e) => {
                               const rect = e.currentTarget.getBoundingClientRect();
                               setPopoverPos({ top: rect.top, left: rect.left - 288 });
@@ -378,18 +378,18 @@ export function FacturaTable() {
                 )}
                 {p.fields.Impuestos != null && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Impuestos</span>
+                    <span className="text-gray-400">Imp. /Ret.</span>
                     <span className="font-mono text-gray-700">{formatCurrency(p.fields.Impuestos, p.fields.Moneda as Moneda)}</span>
                   </div>
                 )}
                 <div className="flex justify-between font-semibold">
                   <span className="text-gray-500">Total</span>
-                  <span className="font-mono text-emerald-600">{formatCurrency(p.fields.Monto, p.fields.Moneda as Moneda)}</span>
+                  <span className="font-mono text-violet-600">{formatCurrency(p.fields.Monto, p.fields.Moneda as Moneda)}</span>
                 </div>
               </div>
               {p.fields.DetalleImpuestos && (
                 <div className="pt-2 border-t border-gray-100">
-                  <span className="text-gray-400 block mb-1">Detalle impuestos</span>
+                  <span className="text-gray-400 block mb-1">Detalle imp. /ret.</span>
                   <ul className="space-y-0.5 text-gray-600">
                     {p.fields.DetalleImpuestos.split(/[,;\n]/).map((item, i) => {
                       const trimmed = item.trim();

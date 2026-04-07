@@ -15,14 +15,14 @@ const navItems = [
   },
   {
     href: "/facturas",
-    label: "Facturas",
+    label: "Ventas",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
     ),
   },
   {
     href: "/gastos",
-    label: "Gastos",
+    label: "Compras",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
     ),
@@ -40,18 +40,22 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-16 lg:w-56 border-r bg-white min-h-screen flex flex-col transition-all duration-200">
-      <div className="p-3 lg:p-5 border-b">
+    <aside className="w-16 lg:w-56 bg-violet-600 min-h-screen flex flex-col transition-all duration-200">
+      <div className="p-3 lg:p-5 border-b border-violet-500/30">
         {/* Mobile: small logo */}
         <div className="lg:hidden flex justify-center">
-          <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={32} height={32} className="object-contain" />
+          <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center">
+            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={28} height={28} className="object-contain brightness-0 invert" />
+          </div>
         </div>
         {/* Desktop: logo + text */}
         <div className="hidden lg:flex flex-col items-center gap-3">
-          <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={80} height={80} className="object-contain" />
+          <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
+            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={48} height={48} className="object-contain brightness-0 invert" />
+          </div>
           <div className="text-center">
-            <h1 className="text-base font-bold text-gray-900">Brief Sistema</h1>
-            <p className="text-[10px] text-gray-400 uppercase tracking-widest">WTF Agency</p>
+            <h1 className="text-base font-bold text-white">Brief Sistema</h1>
+            <p className="text-[10px] text-violet-200 uppercase tracking-widest">WTF Agency</p>
           </div>
         </div>
       </div>
@@ -65,13 +69,13 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
                 isActive
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                  ? "bg-white/20 text-white"
+                  : "text-violet-200 hover:bg-white/10 hover:text-white"
               )}
             >
               <span className={cn(
                 "flex-shrink-0",
-                isActive ? "text-emerald-500" : "text-gray-400"
+                isActive ? "text-white" : "text-violet-300"
               )}>
                 {item.icon}
               </span>
