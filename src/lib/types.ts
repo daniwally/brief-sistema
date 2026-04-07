@@ -85,6 +85,9 @@ export interface ExtractedInvoice {
 
 export interface Pago {
   id: string;
+  Neto: number | null;
+  Impuestos: number | null;
+  DetalleImpuestos: string | null;
   Monto: number;
   Moneda: "ARS" | "CLP" | "PYG" | "USD";
   Fecha: string;
@@ -97,6 +100,9 @@ export interface Pago {
 }
 
 export interface ExtractedPayment {
+  neto: number | null;
+  impuestos: number | null;
+  detalle_impuestos: string | null;
   monto: number | null;
   moneda: "ARS" | "CLP" | "PYG" | "USD" | null;
   fecha: string | null;

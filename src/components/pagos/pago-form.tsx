@@ -57,6 +57,9 @@ export function PagoForm() {
   const [loadingFacturas, setLoadingFacturas] = useState(true);
 
   const [form, setForm] = useState({
+    Neto: "",
+    Impuestos: "",
+    DetalleImpuestos: "",
     Monto: "",
     Moneda: "USD",
     Fecha: new Date().toISOString().split("T")[0],
@@ -86,6 +89,9 @@ export function PagoForm() {
     setPdfName(file.name);
     setForm((prev) => ({
       ...prev,
+      Neto: data.neto != null ? formatEuropean(String(data.neto)) : prev.Neto,
+      Impuestos: data.impuestos != null ? formatEuropean(String(data.impuestos)) : prev.Impuestos,
+      DetalleImpuestos: data.detalle_impuestos || prev.DetalleImpuestos,
       Monto: data.monto != null ? formatEuropean(String(data.monto)) : prev.Monto,
       Moneda: data.moneda || prev.Moneda,
       Fecha: data.fecha || prev.Fecha,
@@ -127,8 +133,13 @@ export function PagoForm() {
     }
 
     setLoading(true);
+    const netoNum = parseEuropean(form.Neto);
+    const impuestosNum = parseEuropean(form.Impuestos);
     const montoNum = parseEuropean(form.Monto);
     const fields: Record<string, unknown> = {
+      Neto: netoNum ? parseFloat(netoNum) : null,
+      Impuestos: impuestosNum ? parseFloat(impuestosNum) : null,
+      DetalleImpuestos: form.DetalleImpuestos || null,
       Monto: parseFloat(montoNum),
       Moneda: form.Moneda,
       Fecha: form.Fecha,
@@ -239,9 +250,32 @@ export function PagoForm() {
         </div>
       </div>
 
+      <h3 className="text-lg font-semibold border-b pb-2">Importes</h3>
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label>Monto *</Label>
+          <Label>Neto (subtotal)</Label>
+          <Input
+            type="text"
+            inputMode="decimal"
+            placeholder="0,00"
+            value={form.Neto}
+            onChange={(e) => updateField("Neto", e.target.value)}
+            onBlur={() => updateField("Neto", formatEuropean(parseEuropean(form.Neto)))}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Impuestos</Label>
+          <Input
+            type="text"
+            inputMode="decimal"
+            placeholder="0,00"
+            value={form.Impuestos}
+            onChange={(e) => updateField("Impuestos", e.target.value)}
+            onBlur={() => updateField("Impuestos", formatEuropean(parseEuropean(form.Impuestos)))}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Total *</Label>
           <Input
             type="text"
             inputMode="decimal"
@@ -253,6 +287,20 @@ export function PagoForm() {
             className="font-semibold"
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Detalle de impuestos</Label>
+        <Textarea
+          placeholder="Ej: IVA 21%: $2100, Retenciones: $500"
+          value={form.DetalleImpuestos}
+          onChange={(e) => updateField("DetalleImpuestos", e.target.value)}
+          className="text-sm"
+        />
+      </div>
+
+      <h3 className="text-lg font-semibold border-b pb-2">Detalle</h3>
+      <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label>Moneda</Label>
           <Select value={form.Moneda} onValueChange={(v) => updateField("Moneda", v)}>

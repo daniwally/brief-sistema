@@ -85,7 +85,10 @@ export async function extractInvoiceData(pdfBase64: string): Promise<ExtractedIn
 const PAYMENT_EXTRACTION_PROMPT = `Sos un asistente que extrae datos de comprobantes de pago latinoamericanos.
 Extraé los siguientes campos de este PDF de comprobante de pago/transferencia. Devolvé SOLAMENTE JSON válido, sin markdown ni backticks:
 {
-  "monto": importe del pago como número,
+  "neto": importe neto (subtotal sin impuestos) como número,
+  "impuestos": monto total de impuestos como número,
+  "detalle_impuestos": "desglose de impuestos, ej: IVA 21%: $2100, Retenciones: $500",
+  "monto": importe total del pago como número,
   "moneda": "ARS" | "CLP" | "PYG" | "USD",
   "fecha": "YYYY-MM-DD",
   "pagador": "nombre de quien realizó el pago",
@@ -94,6 +97,13 @@ Extraé los siguientes campos de este PDF de comprobante de pago/transferencia. 
   "pais": "Argentina" | "Chile" | "Paraguay"
 }
 Si un campo no se puede determinar, usá null.
+
+IMPORTES:
+- "neto" es el subtotal ANTES de impuestos/retenciones
+- "impuestos" es la SUMA de todos los impuestos o retenciones
+- "monto" es el TOTAL final
+- "detalle_impuestos" es un texto con el desglose de cada impuesto/retencion
+- Si el comprobante no separa neto de impuestos, poné el total en "monto" y null en "neto" e "impuestos"
 
 REGLAS PARA DETECTAR MONEDA:
 - Si ves "$" o "ARS" o "Pesos" en un comprobante argentino (tiene CBU/CVU/CUIT) → "ARS"

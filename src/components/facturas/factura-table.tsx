@@ -14,6 +14,7 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { Filters } from "@/components/shared/filters";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Factura, EstadoPago, Moneda } from "@/lib/types";
+import { toast } from "sonner";
 import Link from "next/link";
 
 interface FacturaRecord {
@@ -125,8 +126,21 @@ export function FacturaTable() {
   }, [fetchFacturas]);
 
   async function toggleEstado(id: string, currentEstado: EstadoPago) {
-    setTogglingId(id);
     const newEstado = currentEstado === "Pagado" ? "Impago" : "Pagado";
+
+    // Para marcar como Pagado, debe existir un pago registrado
+    if (newEstado === "Pagado") {
+      const factura = facturas.find((f) => f.id === id);
+      if (factura) {
+        const pago = findPago(factura, pagos);
+        if (!pago) {
+          toast.error("No se puede marcar como Pagada sin un comprobante de pago registrado. Registra un pago primero.", { duration: 5000 });
+          return;
+        }
+      }
+    }
+
+    setTogglingId(id);
     setFacturas((prev) =>
       prev.map((f) =>
         f.id === id ? { ...f, fields: { ...f.fields, Estado: newEstado } } : f
