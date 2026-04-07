@@ -24,9 +24,9 @@ export default function RootLayout({
       lang="es"
       className={`${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex bg-gray-50/80">
+      <body className="min-h-full flex bg-gray-200">
         <Sidebar />
-        <main className="flex-1 min-w-0 p-6 lg:p-8 overflow-x-hidden overflow-y-auto bg-gray-50/80">{children}</main>
+        <main className="flex-1 min-w-0 p-6 lg:p-8 overflow-x-hidden overflow-y-auto bg-gray-200">{children}</main>
         <Toaster richColors position="top-right" />
       </body>
     </html>

@@ -61,8 +61,8 @@ export function Sidebar() {
           <div className="hidden lg:flex flex-col items-center gap-3">
             <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={100} height={100} className="object-contain brightness-0 invert" />
             <div className="text-center">
-              <h1 className="text-base font-bold text-white">Brief Sistema</h1>
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest">WTF Agency</p>
+              <h1 className="text-base font-bold text-white">WTF Agency</h1>
+              <p className="text-[10px] text-gray-400 uppercase tracking-widest">System 1.0</p>
             </div>
           </div>
         </div>
