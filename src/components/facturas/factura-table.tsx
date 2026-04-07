@@ -34,6 +34,20 @@ function toUsd(monto: number, moneda: Moneda, rates: Cotizaciones): number {
   return monto / rate;
 }
 
+function isEnMora(fecha: string | undefined, estado: string): boolean {
+  if (!fecha || estado === "Pagado") return false;
+  const emision = new Date(fecha + "T00:00:00");
+  const hoy = new Date();
+  const diff = (hoy.getTime() - emision.getTime()) / (1000 * 60 * 60 * 24);
+  return diff > 31;
+}
+
+function diasMora(fecha: string): number {
+  const emision = new Date(fecha + "T00:00:00");
+  const hoy = new Date();
+  return Math.floor((hoy.getTime() - emision.getTime()) / (1000 * 60 * 60 * 24));
+}
+
 export function FacturaTable() {
   const [facturas, setFacturas] = useState<FacturaRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -171,6 +185,7 @@ export function FacturaTable() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-8"></TableHead>
                 <TableHead>Fecha</TableHead>
                 <TableHead>Nro</TableHead>
                 <TableHead>Emisor</TableHead>
@@ -187,9 +202,23 @@ export function FacturaTable() {
               {facturas.map((f) => {
                 const moneda = f.fields.Moneda as Moneda;
                 const usdAmount = rates ? toUsd(f.fields.Monto, moneda, rates) : null;
+                const mora = isEnMora(f.fields.Fecha, f.fields.Estado as string);
                 return (
-                  <TableRow key={f.id}>
-                    <TableCell className="whitespace-nowrap">
+                  <TableRow key={f.id} className={mora ? "bg-red-50 hover:bg-red-100" : ""}>
+                    <TableCell className="text-center px-2">
+                      {mora && (
+                        <span title={`${diasMora(f.fields.Fecha!)} días en mora`} className="relative group">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-red-500 inline-block">
+                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                            <line x1="4" y1="22" x2="4" y2="15" stroke="currentColor" strokeWidth="2"/>
+                          </svg>
+                          <span className="absolute left-6 -top-1 hidden group-hover:block bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-md whitespace-nowrap z-10 shadow-sm">
+                            {diasMora(f.fields.Fecha!)} días en mora
+                          </span>
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className={`whitespace-nowrap ${mora ? "text-red-700 font-medium" : ""}`}>
                       {f.fields.Fecha ? formatDate(f.fields.Fecha) : "-"}
                     </TableCell>
                     <TableCell>{f.fields.Numero || "-"}</TableCell>
