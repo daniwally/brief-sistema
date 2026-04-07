@@ -1,8 +1,17 @@
 import { NextRequest } from "next/server";
-import { updateRecord, deleteRecord, TABLE_IDS } from "@/lib/airtable";
+import { getRecord, updateRecord, deleteRecord, TABLE_IDS } from "@/lib/airtable";
 import type { Factura } from "@/lib/types";
 
 type FacturaFields = Omit<Factura, "id">;
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const record = await getRecord<FacturaFields>(TABLE_IDS.Facturas, id);
+  return Response.json(record);
+}
 
 export async function PATCH(
   request: NextRequest,

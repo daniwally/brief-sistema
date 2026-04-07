@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,6 @@ import type { ExtractedInvoice } from "@/lib/types";
 /** Format a numeric string to European notation (1.250.000,50) */
 function formatEuropean(value: string): string {
   if (!value) return "";
-  // Parse the raw number
   const num = parseFloat(value);
   if (isNaN(num)) return value;
   return num.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -30,18 +29,23 @@ function formatEuropean(value: string): string {
 /** Parse European notation back to a plain number string */
 function parseEuropean(formatted: string): string {
   if (!formatted) return "";
-  // Remove thousand separators (dots), replace decimal comma with dot
   const clean = formatted.replace(/\./g, "").replace(",", ".");
   const num = parseFloat(clean);
   if (isNaN(num)) return "";
   return String(num);
 }
 
-export function FacturaForm() {
+interface FacturaFormProps {
+  facturaId?: string;
+}
+
+export function FacturaForm({ facturaId }: FacturaFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(!!facturaId);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [pdfName, setPdfName] = useState<string | null>(null);
+  const isEdit = !!facturaId;
 
   const [form, setForm] = useState({
     Numero: "",
@@ -60,6 +64,34 @@ export function FacturaForm() {
     Estado: "Impago",
     Notas: "",
   });
+
+  useEffect(() => {
+    if (!facturaId) return;
+    fetch(`/api/facturas/${facturaId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        const f = data.fields;
+        setForm({
+          Numero: f.Numero || "",
+          Neto: f.Neto != null ? formatEuropean(String(f.Neto)) : "",
+          Impuestos: f.Impuestos != null ? formatEuropean(String(f.Impuestos)) : "",
+          DetalleImpuestos: f.DetalleImpuestos || "",
+          Monto: f.Monto != null ? formatEuropean(String(f.Monto)) : "",
+          Moneda: f.Moneda || "USD",
+          Fecha: f.Fecha || new Date().toISOString().split("T")[0],
+          Emisor: f.Emisor || "",
+          CUIT_RUT_RUC: f.CUIT_RUT_RUC || "",
+          Cliente: f.Cliente || "",
+          CUIT_RUT_RUC_Cliente: f.CUIT_RUT_RUC_Cliente || "",
+          Descripcion: f.Descripcion || "",
+          Pais: f.Pais || "Argentina",
+          Estado: f.Estado || "Impago",
+          Notas: f.Notas || "",
+        });
+      })
+      .catch(() => toast.error("Error al cargar la venta"))
+      .finally(() => setLoadingData(false));
+  }, [facturaId]);
 
   function updateField(field: string, value: string | null) {
     setForm((prev) => ({ ...prev, [field]: value ?? "" }));
@@ -84,13 +116,13 @@ export function FacturaForm() {
       Descripcion: data.descripcion || prev.Descripcion,
       Pais: data.pais || prev.Pais,
     }));
-    toast.success("Datos extraídos del PDF. Revisá y corregí si es necesario.");
+    toast.success("Datos extraidos del PDF. Revisa y corregi si es necesario.");
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.Monto || !form.Emisor) {
-      toast.error("Completá monto y emisor");
+      toast.error("Completa monto y emisor");
       return;
     }
 
@@ -116,26 +148,43 @@ export function FacturaForm() {
       Notas: form.Notas || null,
     };
 
-    const formData = new FormData();
-    formData.append("fields", JSON.stringify(fields));
-    if (pdfFile) formData.append("file", pdfFile);
+    let res: Response;
+    if (isEdit) {
+      res = await fetch(`/api/facturas/${facturaId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fields),
+      });
+    } else {
+      const formData = new FormData();
+      formData.append("fields", JSON.stringify(fields));
+      if (pdfFile) formData.append("file", pdfFile);
+      res = await fetch("/api/facturas", { method: "POST", body: formData });
+    }
 
-    const res = await fetch("/api/facturas", { method: "POST", body: formData });
     if (res.ok) {
-      toast.success("Venta registrada");
+      toast.success(isEdit ? "Venta actualizada" : "Venta registrada");
       router.push("/facturas");
     } else {
-      toast.error("Error al guardar la venta");
+      toast.error(isEdit ? "Error al actualizar la venta" : "Error al guardar la venta");
     }
     setLoading(false);
+  }
+
+  if (loadingData) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <p className="text-gray-400">Cargando datos...</p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Nueva Venta</h2>
-          <p className="text-sm text-gray-400">Registrar factura de venta</p>
+          <h2 className="text-2xl font-bold text-gray-900">{isEdit ? "Editar Venta" : "Nueva Venta"}</h2>
+          <p className="text-sm text-gray-400">{isEdit ? `Editando factura ${form.Numero || facturaId}` : "Registrar factura de venta"}</p>
         </div>
         <Button type="button" variant="outline" className="rounded-xl" onClick={() => router.push("/facturas")}>
           Volver a Ventas
@@ -143,6 +192,7 @@ export function FacturaForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {!isEdit && (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-6">
           <PdfUploader onExtracted={handleExtracted} />
 
@@ -152,11 +202,12 @@ export function FacturaForm() {
             </p>
           )}
         </div>
+        )}
 
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-6">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Número de Factura</Label>
+          <Label>Numero de Factura</Label>
           <Input
             placeholder="001-00001234"
             value={form.Numero}
@@ -294,7 +345,7 @@ export function FacturaForm() {
       </div>
 
       <div className="space-y-2">
-        <Label>Descripción</Label>
+        <Label>Descripcion</Label>
         <Textarea
           placeholder="Detalle de servicios o bienes"
           value={form.Descripcion}
@@ -330,7 +381,7 @@ export function FacturaForm() {
 
         <div className="flex gap-4">
           <Button type="submit" disabled={loading} className="rounded-xl bg-gray-900 hover:bg-gray-800 text-white shadow-sm">
-            {loading ? "Guardando..." : "Guardar Venta"}
+            {loading ? "Guardando..." : isEdit ? "Actualizar Venta" : "Guardar Venta"}
           </Button>
           <Button type="button" variant="outline" className="rounded-xl" onClick={() => router.push("/facturas")}>
             Cancelar

@@ -269,7 +269,13 @@ export function FacturaTable() {
                     <TableCell className={`px-2 whitespace-nowrap text-xs ${mora ? "text-red-700 font-medium" : ""}`}>
                       {f.fields.Fecha ? formatDate(f.fields.Fecha) : "-"}
                     </TableCell>
-                    <TableCell className="px-2 text-xs truncate">{f.fields.Numero || "-"}</TableCell>
+                    <TableCell className="px-2 text-xs truncate">
+                      {f.fields.Numero ? (
+                        <Link href={`/facturas/${f.id}/editar`} className="text-blue-600 hover:underline">
+                          {f.fields.Numero}
+                        </Link>
+                      ) : "-"}
+                    </TableCell>
                     <TableCell className="px-2">
                       <div className="text-sm truncate">{f.fields.Cliente || "-"}</div>
                       {f.fields.Emisor && (
