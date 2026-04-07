@@ -21,15 +21,36 @@ interface FacturaRecord {
   fields: Omit<Factura, "id">;
 }
 
+interface Cotizaciones {
+  ARS: number;
+  CLP: number;
+  PYG: number;
+  USD: number;
+}
+
+function toUsd(monto: number, moneda: Moneda, rates: Cotizaciones): number {
+  const rate = rates[moneda];
+  if (!rate || rate === 0) return 0;
+  return monto / rate;
+}
+
 export function FacturaTable() {
   const [facturas, setFacturas] = useState<FacturaRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [rates, setRates] = useState<Cotizaciones | null>(null);
   const [pais, setPais] = useState("all");
   const [estado, setEstado] = useState("all");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
+
+  useEffect(() => {
+    fetch("/api/cotizacion")
+      .then((r) => r.json())
+      .then(setRates)
+      .catch(() => {});
+  }, []);
 
   const fetchFacturas = useCallback(async () => {
     setLoading(true);
@@ -94,22 +115,40 @@ export function FacturaTable() {
         </Link>
       </div>
 
-      <Filters
-        pais={pais}
-        setPais={setPais}
-        estado={estado}
-        setEstado={setEstado}
-        desde={desde}
-        setDesde={setDesde}
-        hasta={hasta}
-        setHasta={setHasta}
-        onClear={() => {
-          setPais("all");
-          setEstado("all");
-          setDesde("");
-          setHasta("");
-        }}
-      />
+      {/* Filters + Cotización */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
+        <Filters
+          pais={pais}
+          setPais={setPais}
+          estado={estado}
+          setEstado={setEstado}
+          desde={desde}
+          setDesde={setDesde}
+          hasta={hasta}
+          setHasta={setHasta}
+          onClear={() => {
+            setPais("all");
+            setEstado("all");
+            setDesde("");
+            setHasta("");
+          }}
+        />
+        {rates && (
+          <div className="flex items-center gap-4 pt-2 border-t border-gray-100">
+            <span className="text-xs text-gray-400">Cotizacion Ref.:</span>
+            <span className="text-xs font-medium text-gray-600">
+              USD/ARS <span className="text-emerald-600 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+            </span>
+            <span className="text-xs font-medium text-gray-600">
+              USD/CLP <span className="text-emerald-600 font-mono">$ {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+            </span>
+            <span className="text-xs font-medium text-gray-600">
+              USD/PYG <span className="text-emerald-600 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
+            </span>
+            <span className="text-[10px] text-gray-300">dolarhoy.com</span>
+          </div>
+        )}
+      </div>
 
       {loading ? (
         <p className="text-muted-foreground py-8 text-center">Cargando...</p>
@@ -137,60 +176,70 @@ export function FacturaTable() {
                 <TableHead>Emisor</TableHead>
                 <TableHead>Cliente</TableHead>
                 <TableHead className="text-right">Monto</TableHead>
-                <TableHead>País</TableHead>
+                <TableHead className="text-right">USD Ref.</TableHead>
+                <TableHead>Pais</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>PDF</TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {facturas.map((f) => (
-                <TableRow key={f.id}>
-                  <TableCell className="whitespace-nowrap">
-                    {f.fields.Fecha ? formatDate(f.fields.Fecha) : "-"}
-                  </TableCell>
-                  <TableCell>{f.fields.Numero || "-"}</TableCell>
-                  <TableCell>{f.fields.Emisor || "-"}</TableCell>
-                  <TableCell>{f.fields.Cliente || "-"}</TableCell>
-                  <TableCell className="text-right font-mono whitespace-nowrap">
-                    {formatCurrency(f.fields.Monto, f.fields.Moneda as Moneda)}
-                  </TableCell>
-                  <TableCell>{f.fields.Pais}</TableCell>
-                  <TableCell>
-                    <StatusBadge
-                      estado={f.fields.Estado as EstadoPago}
-                      loading={togglingId === f.id}
-                      onToggle={() =>
-                        toggleEstado(f.id, f.fields.Estado as EstadoPago)
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {f.fields.Archivo && f.fields.Archivo.length > 0 ? (
-                      <a
-                        href={f.fields.Archivo[0].url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline text-sm"
+              {facturas.map((f) => {
+                const moneda = f.fields.Moneda as Moneda;
+                const usdAmount = rates ? toUsd(f.fields.Monto, moneda, rates) : null;
+                return (
+                  <TableRow key={f.id}>
+                    <TableCell className="whitespace-nowrap">
+                      {f.fields.Fecha ? formatDate(f.fields.Fecha) : "-"}
+                    </TableCell>
+                    <TableCell>{f.fields.Numero || "-"}</TableCell>
+                    <TableCell>{f.fields.Emisor || "-"}</TableCell>
+                    <TableCell>{f.fields.Cliente || "-"}</TableCell>
+                    <TableCell className="text-right font-mono whitespace-nowrap">
+                      {formatCurrency(f.fields.Monto, moneda)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono whitespace-nowrap text-gray-400">
+                      {usdAmount != null
+                        ? `US$ ${usdAmount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                        : "-"}
+                    </TableCell>
+                    <TableCell>{f.fields.Pais}</TableCell>
+                    <TableCell>
+                      <StatusBadge
+                        estado={f.fields.Estado as EstadoPago}
+                        loading={togglingId === f.id}
+                        onToggle={() =>
+                          toggleEstado(f.id, f.fields.Estado as EstadoPago)
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {f.fields.Archivo && f.fields.Archivo.length > 0 ? (
+                        <a
+                          href={f.fields.Archivo[0].url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline text-sm"
+                        >
+                          Ver PDF
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => deleteFactura(f.id)}
                       >
-                        Ver PDF
-                      </a>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => deleteFactura(f.id)}
-                    >
-                      Eliminar
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        Eliminar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>

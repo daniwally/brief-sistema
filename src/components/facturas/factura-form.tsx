@@ -17,6 +17,25 @@ import { PdfUploader } from "./pdf-uploader";
 import { toast } from "sonner";
 import type { ExtractedInvoice } from "@/lib/types";
 
+/** Format a numeric string to European notation (1.250.000,50) */
+function formatEuropean(value: string): string {
+  if (!value) return "";
+  // Parse the raw number
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  return num.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+/** Parse European notation back to a plain number string */
+function parseEuropean(formatted: string): string {
+  if (!formatted) return "";
+  // Remove thousand separators (dots), replace decimal comma with dot
+  const clean = formatted.replace(/\./g, "").replace(",", ".");
+  const num = parseFloat(clean);
+  if (isNaN(num)) return "";
+  return String(num);
+}
+
 export function FacturaForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -51,10 +70,10 @@ export function FacturaForm() {
     setForm((prev) => ({
       ...prev,
       Numero: data.numero || prev.Numero,
-      Neto: data.neto != null ? String(data.neto) : prev.Neto,
-      Impuestos: data.impuestos != null ? String(data.impuestos) : prev.Impuestos,
+      Neto: data.neto != null ? formatEuropean(String(data.neto)) : prev.Neto,
+      Impuestos: data.impuestos != null ? formatEuropean(String(data.impuestos)) : prev.Impuestos,
       DetalleImpuestos: data.detalle_impuestos || prev.DetalleImpuestos,
-      Monto: data.monto != null ? String(data.monto) : prev.Monto,
+      Monto: data.monto != null ? formatEuropean(String(data.monto)) : prev.Monto,
       Moneda: data.moneda || prev.Moneda,
       Fecha: data.fecha || prev.Fecha,
       Emisor: data.emisor || prev.Emisor,
@@ -75,12 +94,15 @@ export function FacturaForm() {
     }
 
     setLoading(true);
+    const netoNum = parseEuropean(form.Neto);
+    const impuestosNum = parseEuropean(form.Impuestos);
+    const montoNum = parseEuropean(form.Monto);
     const fields: Record<string, unknown> = {
       Numero: form.Numero || null,
-      Neto: form.Neto ? parseFloat(form.Neto) : null,
-      Impuestos: form.Impuestos ? parseFloat(form.Impuestos) : null,
+      Neto: netoNum ? parseFloat(netoNum) : null,
+      Impuestos: impuestosNum ? parseFloat(impuestosNum) : null,
       DetalleImpuestos: form.DetalleImpuestos || null,
-      Monto: parseFloat(form.Monto),
+      Monto: parseFloat(montoNum),
       Moneda: form.Moneda,
       Fecha: form.Fecha,
       Emisor: form.Emisor,
@@ -184,31 +206,34 @@ export function FacturaForm() {
         <div className="space-y-2">
           <Label>Neto (subtotal)</Label>
           <Input
-            type="number"
-            step="0.01"
-            placeholder="0.00"
+            type="text"
+            inputMode="decimal"
+            placeholder="0,00"
             value={form.Neto}
             onChange={(e) => updateField("Neto", e.target.value)}
+            onBlur={() => updateField("Neto", formatEuropean(parseEuropean(form.Neto)))}
           />
         </div>
         <div className="space-y-2">
           <Label>Impuestos</Label>
           <Input
-            type="number"
-            step="0.01"
-            placeholder="0.00"
+            type="text"
+            inputMode="decimal"
+            placeholder="0,00"
             value={form.Impuestos}
             onChange={(e) => updateField("Impuestos", e.target.value)}
+            onBlur={() => updateField("Impuestos", formatEuropean(parseEuropean(form.Impuestos)))}
           />
         </div>
         <div className="space-y-2">
           <Label>Total *</Label>
           <Input
-            type="number"
-            step="0.01"
-            placeholder="0.00"
+            type="text"
+            inputMode="decimal"
+            placeholder="0,00"
             value={form.Monto}
             onChange={(e) => updateField("Monto", e.target.value)}
+            onBlur={() => updateField("Monto", formatEuropean(parseEuropean(form.Monto)))}
             required
             className="font-semibold"
           />
