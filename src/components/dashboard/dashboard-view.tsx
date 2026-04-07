@@ -241,21 +241,25 @@ export function DashboardView() {
         <>
           {/* Monthly total + Pending alerts */}
           {(() => {
-            const mesLabel = "total";
             let totalUsdMes = 0;
-            if (rates && data.facturacionMes) {
-              for (const m of MONEDAS) {
-                const val = data.facturacionMes[m] || 0;
-                if (val > 0) totalUsdMes += toUsd(val, m, rates);
+            if (data.facturacionMes) {
+              if (rates) {
+                for (const m of MONEDAS) {
+                  const val = data.facturacionMes[m] || 0;
+                  if (val > 0) totalUsdMes += toUsd(val, m, rates);
+                }
+              } else {
+                // Sin rates, sumar USD directo
+                totalUsdMes = data.facturacionMes["USD"] || 0;
               }
             }
             return (
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-gray-400 uppercase tracking-wide">Facturacion {mesLabel}</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wide">Facturacion total</p>
                 </div>
                 <p className="text-4xl font-bold text-emerald-600 font-mono">
-                  {formatUsd(totalUsdMes)}
+                  {rates ? formatUsd(totalUsdMes) : MONEDAS.filter(m => (data.facturacionMes[m] || 0) > 0).map(m => formatCurrency(data.facturacionMes[m], m)).join(" | ") || "USD 0,00"}
                 </p>
                 {data.facturacionMes && (
                   <div className="flex flex-wrap gap-3 mt-3">
