@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { updateRecord, deleteRecord } from "@/lib/airtable";
+import { updateRecord, deleteRecord, TABLE_IDS } from "@/lib/airtable";
 import type { Factura } from "@/lib/types";
 
 type FacturaFields = Omit<Factura, "id">;
@@ -10,7 +10,7 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const fields = await request.json();
-  const record = await updateRecord<FacturaFields>("Facturas", id, fields);
+  const record = await updateRecord<FacturaFields>(TABLE_IDS.Facturas, id, fields);
   return Response.json(record);
 }
 
@@ -19,6 +19,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const result = await deleteRecord("Facturas", id);
+  const result = await deleteRecord(TABLE_IDS.Facturas, id);
   return Response.json(result);
 }

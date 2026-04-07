@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import type { EstadoPago } from "@/lib/types";
 
 interface StatusBadgeProps {
@@ -10,17 +9,20 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ estado, onToggle, loading }: StatusBadgeProps) {
+  const isPagado = estado === "Pagado";
   return (
-    <Badge
-      variant={estado === "Pagado" ? "default" : "secondary"}
-      className={`cursor-pointer select-none ${
-        estado === "Pagado"
-          ? "bg-green-600 hover:bg-green-700"
-          : "bg-amber-500 hover:bg-amber-600 text-white"
-      } ${loading ? "opacity-50" : ""}`}
+    <button
+      type="button"
       onClick={onToggle}
+      disabled={loading}
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer select-none ${
+        isPagado
+          ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
+          : "bg-amber-50 text-amber-600 hover:bg-amber-100"
+      } ${loading ? "opacity-50" : ""}`}
     >
+      <span className={`w-1.5 h-1.5 rounded-full ${isPagado ? "bg-emerald-400" : "bg-amber-400"}`} />
       {loading ? "..." : estado}
-    </Badge>
+    </button>
   );
 }

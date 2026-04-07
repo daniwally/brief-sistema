@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { listRecords, createRecord, uploadAttachment } from "@/lib/airtable";
+import { listRecords, createRecord, uploadAttachment, TABLE_IDS } from "@/lib/airtable";
 import type { Gasto } from "@/lib/types";
 
 type GastoFields = Omit<Gasto, "id">;
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     const filterByFormula = conditions.length > 0 ? `AND(${conditions.join(",")})` : undefined;
 
-    const records = await listRecords<GastoFields>("Gastos", {
+    const records = await listRecords<GastoFields>(TABLE_IDS.Gastos, {
       filterByFormula,
       sort: [{ field: "Fecha", direction: "desc" }],
     });
@@ -41,11 +41,11 @@ export async function POST(request: NextRequest) {
     const file = formData.get("file") as File | null;
 
     const fields = JSON.parse(fieldsJson);
-    const record = await createRecord<GastoFields>("Gastos", fields);
+    const record = await createRecord<GastoFields>(TABLE_IDS.Gastos, fields);
 
     if (file) {
       try {
-        await uploadAttachment("Gastos", record.id, "Archivo", file);
+        await uploadAttachment(TABLE_IDS.Gastos, record.id, "Archivo", file);
       } catch {
         console.error("Failed to upload attachment, record created without it");
       }

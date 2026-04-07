@@ -2,6 +2,13 @@ const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY || "";
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || "";
 const BASE_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}`;
 
+// Use table IDs to avoid encoding issues with table names
+export const TABLE_IDS = {
+  Facturas: "tblc5An5TrhxzyBMU",
+  Gastos: "tbl3DdSPn3G71yUDl",
+  Categorias: "tblp1nn7PjBjsUbEM",
+} as const;
+
 export function checkConfig() {
   return {
     hasApiKey: !!AIRTABLE_API_KEY && AIRTABLE_API_KEY !== "",

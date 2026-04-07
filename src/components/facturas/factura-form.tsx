@@ -25,6 +25,9 @@ export function FacturaForm() {
 
   const [form, setForm] = useState({
     Numero: "",
+    Neto: "",
+    Impuestos: "",
+    DetalleImpuestos: "",
     Monto: "",
     Moneda: "USD",
     Fecha: new Date().toISOString().split("T")[0],
@@ -48,6 +51,9 @@ export function FacturaForm() {
     setForm((prev) => ({
       ...prev,
       Numero: data.numero || prev.Numero,
+      Neto: data.neto != null ? String(data.neto) : prev.Neto,
+      Impuestos: data.impuestos != null ? String(data.impuestos) : prev.Impuestos,
+      DetalleImpuestos: data.detalle_impuestos || prev.DetalleImpuestos,
       Monto: data.monto != null ? String(data.monto) : prev.Monto,
       Moneda: data.moneda || prev.Moneda,
       Fecha: data.fecha || prev.Fecha,
@@ -71,6 +77,9 @@ export function FacturaForm() {
     setLoading(true);
     const fields: Record<string, unknown> = {
       Numero: form.Numero || null,
+      Neto: form.Neto ? parseFloat(form.Neto) : null,
+      Impuestos: form.Impuestos ? parseFloat(form.Impuestos) : null,
+      DetalleImpuestos: form.DetalleImpuestos || null,
       Monto: parseFloat(form.Monto),
       Moneda: form.Moneda,
       Fecha: form.Fecha,
@@ -170,10 +179,30 @@ export function FacturaForm() {
         </div>
       </div>
 
-      <h3 className="text-lg font-semibold border-b pb-2">Detalle</h3>
+      <h3 className="text-lg font-semibold border-b pb-2">Importes</h3>
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label>Monto *</Label>
+          <Label>Neto (subtotal)</Label>
+          <Input
+            type="number"
+            step="0.01"
+            placeholder="0.00"
+            value={form.Neto}
+            onChange={(e) => updateField("Neto", e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Impuestos</Label>
+          <Input
+            type="number"
+            step="0.01"
+            placeholder="0.00"
+            value={form.Impuestos}
+            onChange={(e) => updateField("Impuestos", e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Total *</Label>
           <Input
             type="number"
             step="0.01"
@@ -181,8 +210,23 @@ export function FacturaForm() {
             value={form.Monto}
             onChange={(e) => updateField("Monto", e.target.value)}
             required
+            className="font-semibold"
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Detalle de impuestos</Label>
+        <Textarea
+          placeholder="Ej: IVA 21%: $2100, IIBB 3%: $300, Percepciones: $150"
+          value={form.DetalleImpuestos}
+          onChange={(e) => updateField("DetalleImpuestos", e.target.value)}
+          className="text-sm"
+        />
+      </div>
+
+      <h3 className="text-lg font-semibold border-b pb-2">Detalle</h3>
+      <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label>Moneda</Label>
           <Select value={form.Moneda} onValueChange={(v) => updateField("Moneda", v)}>
@@ -192,13 +236,13 @@ export function FacturaForm() {
             <SelectContent>
               <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
               <SelectItem value="CLP">CLP - Peso Chileno</SelectItem>
-              <SelectItem value="PYG">PYG - Guaraní</SelectItem>
-              <SelectItem value="USD">USD - Dólar</SelectItem>
+              <SelectItem value="PYG">PYG - Guarani</SelectItem>
+              <SelectItem value="USD">USD - Dolar</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>País</Label>
+          <Label>Pais</Label>
           <Select value={form.Pais} onValueChange={(v) => updateField("Pais", v)}>
             <SelectTrigger>
               <SelectValue />

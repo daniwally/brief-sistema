@@ -7,7 +7,10 @@ const EXTRACTION_PROMPT = `Sos un asistente que extrae datos de facturas latinoa
 Extraé los siguientes campos de este PDF de factura. Devolvé SOLAMENTE JSON válido, sin markdown ni backticks:
 {
   "numero": "número de factura",
-  "monto": número sin símbolos de moneda,
+  "neto": importe neto (subtotal sin impuestos) como número,
+  "impuestos": monto total de impuestos como número,
+  "detalle_impuestos": "desglose de impuestos, ej: IVA 21%: $2100, IIBB 3%: $300",
+  "monto": importe total (neto + impuestos) como número,
   "moneda": "ARS" | "CLP" | "PYG" | "USD",
   "fecha": "YYYY-MM-DD",
   "emisor": "nombre del emisor/empresa que emite la factura",
@@ -18,6 +21,13 @@ Extraé los siguientes campos de este PDF de factura. Devolvé SOLAMENTE JSON v�
   "pais": "Argentina" | "Chile" | "Paraguay"
 }
 Si un campo no se puede determinar, usá null.
+
+IMPORTES:
+- "neto" es el subtotal ANTES de impuestos
+- "impuestos" es la SUMA de todos los impuestos (IVA, IIBB, percepciones, etc.)
+- "monto" es el TOTAL final (neto + impuestos)
+- "detalle_impuestos" es un texto con el desglose: qué impuesto y cuánto
+- Si la factura no separa neto de impuestos, poné el total en "monto" y null en "neto" e "impuestos"
 
 REGLAS PARA DETECTAR MONEDA:
 - Si ves "$" o "ARS" o "Pesos" en una factura argentina (tiene CUIT con formato XX-XXXXXXXX-X) → "ARS"

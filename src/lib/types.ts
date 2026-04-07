@@ -1,6 +1,9 @@
 export interface Factura {
   id: string;
   Numero: string | null;
+  Neto: number | null;
+  Impuestos: number | null;
+  DetalleImpuestos: string | null;
   Monto: number;
   Moneda: "ARS" | "CLP" | "PYG" | "USD";
   Fecha: string;
@@ -65,6 +68,9 @@ export interface DashboardData {
 
 export interface ExtractedInvoice {
   numero: string | null;
+  neto: number | null;
+  impuestos: number | null;
+  detalle_impuestos: string | null;
   monto: number | null;
   moneda: "ARS" | "CLP" | "PYG" | "USD" | null;
   fecha: string | null;

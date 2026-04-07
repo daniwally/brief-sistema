@@ -85,9 +85,12 @@ export function FacturaTable() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Facturas</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Facturas</h2>
+          <p className="text-sm text-gray-400">Facturacion AR / CL / PY</p>
+        </div>
         <Link href="/facturas/nueva">
-          <Button>+ Nueva Factura</Button>
+          <Button className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm">+ Nueva Factura</Button>
         </Link>
       </div>
 
@@ -125,7 +128,7 @@ export function FacturaTable() {
           </Link>
         </div>
       ) : (
-        <div className="rounded-md border">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>

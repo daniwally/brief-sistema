@@ -85,9 +85,12 @@ export function GastoTable() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Gastos</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Gastos</h2>
+          <p className="text-sm text-gray-400">Registro de compras y gastos</p>
+        </div>
         <Link href="/gastos/nuevo">
-          <Button>+ Nuevo Gasto</Button>
+          <Button className="rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm">+ Nuevo Gasto</Button>
         </Link>
       </div>
 
@@ -125,7 +128,7 @@ export function GastoTable() {
           </Link>
         </div>
       ) : (
-        <div className="rounded-md border">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>

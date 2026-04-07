@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { listRecords, checkConfig } from "@/lib/airtable";
+import { listRecords, checkConfig, TABLE_IDS } from "@/lib/airtable";
 import type { Factura, Gasto, DashboardData, Moneda } from "@/lib/types";
 
 type FacturaFields = Omit<Factura, "id">;
@@ -30,8 +30,8 @@ export async function GET(request: NextRequest) {
     const filterByFormula = conditions.length > 0 ? `AND(${conditions.join(",")})` : undefined;
 
     const [facturas, gastos] = await Promise.all([
-      listRecords<FacturaFields>("Facturas", { filterByFormula }),
-      listRecords<GastoFields>("Gastos", { filterByFormula }),
+      listRecords<FacturaFields>(TABLE_IDS.Facturas, { filterByFormula }),
+      listRecords<GastoFields>(TABLE_IDS.Gastos, { filterByFormula }),
     ]);
 
     const ingresos: Record<string, number> = {};
