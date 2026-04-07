@@ -55,11 +55,11 @@ export function Sidebar() {
         <div className="p-3 lg:p-5 border-b border-white/10">
           {/* Mobile: small logo */}
           <div className="lg:hidden flex justify-center">
-            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={35} height={35} className="object-contain brightness-0 invert" />
+            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={40} height={40} className="object-contain brightness-0 invert" />
           </div>
           {/* Desktop: logo + text */}
           <div className="hidden lg:flex flex-col items-center gap-3">
-            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={100} height={100} className="object-contain brightness-0 invert" />
+            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={115} height={115} className="object-contain brightness-0 invert" />
             <div className="text-center">
               <h1 className="text-base font-bold text-white">WTF Agency</h1>
               <p className="text-[10px] text-gray-400 uppercase tracking-widest">System 1.0</p>
