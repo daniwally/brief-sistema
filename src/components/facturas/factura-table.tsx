@@ -25,6 +25,9 @@ interface FacturaRecord {
 interface PagoRecord {
   id: string;
   fields: {
+    Neto: number | null;
+    Impuestos: number | null;
+    DetalleImpuestos: string | null;
     Monto: number;
     Moneda: string;
     Fecha: string;
@@ -292,25 +295,50 @@ export function FacturaTable() {
                         {pago && (
                           <>
                             <p className="text-[10px] text-emerald-600 mt-0.5">{formatDate(pago.fields.Fecha)}</p>
-                            <div className="absolute right-0 top-full mt-1 hidden group-hover/estado:block bg-white border border-gray-200 rounded-xl shadow-lg p-3 z-20 w-56">
-                              <p className="text-xs font-semibold text-gray-700 mb-2">Resumen del pago</p>
-                              <div className="space-y-1.5 text-xs">
+                            <div className="absolute right-0 bottom-full mb-1 hidden group-hover/estado:block bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-30 w-72">
+                              <p className="text-xs font-semibold text-gray-700 mb-3">Resumen del pago</p>
+                              <div className="space-y-2 text-xs">
                                 <div className="flex justify-between">
                                   <span className="text-gray-400">Pagador</span>
-                                  <span className="font-medium text-gray-700 truncate ml-2">{pago.fields.Pagador}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-gray-400">Monto</span>
-                                  <span className="font-mono font-medium text-emerald-600">{formatCurrency(pago.fields.Monto, pago.fields.Moneda as Moneda)}</span>
+                                  <span className="font-medium text-gray-700">{pago.fields.Pagador}</span>
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="text-gray-400">Fecha pago</span>
                                   <span className="text-gray-700">{formatDate(pago.fields.Fecha)}</span>
                                 </div>
                                 {pago.fields.Descripcion && (
-                                  <div className="pt-1 border-t border-gray-100">
+                                  <div>
                                     <span className="text-gray-400">Concepto</span>
                                     <p className="text-gray-600 mt-0.5">{pago.fields.Descripcion}</p>
+                                  </div>
+                                )}
+                                <div className="pt-2 border-t border-gray-100 space-y-1.5">
+                                  {pago.fields.Neto != null && (
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-400">Neto</span>
+                                      <span className="font-mono text-gray-700">{formatCurrency(pago.fields.Neto, pago.fields.Moneda as Moneda)}</span>
+                                    </div>
+                                  )}
+                                  {pago.fields.Impuestos != null && (
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-400">Impuestos</span>
+                                      <span className="font-mono text-gray-700">{formatCurrency(pago.fields.Impuestos, pago.fields.Moneda as Moneda)}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex justify-between font-semibold">
+                                    <span className="text-gray-500">Total</span>
+                                    <span className="font-mono text-emerald-600">{formatCurrency(pago.fields.Monto, pago.fields.Moneda as Moneda)}</span>
+                                  </div>
+                                </div>
+                                {pago.fields.DetalleImpuestos && (
+                                  <div className="pt-2 border-t border-gray-100">
+                                    <span className="text-gray-400 block mb-1">Detalle impuestos</span>
+                                    <ul className="space-y-0.5 text-gray-600">
+                                      {pago.fields.DetalleImpuestos.split(/[,;\n]/).map((item, i) => {
+                                        const trimmed = item.trim();
+                                        return trimmed ? <li key={i} className="flex items-start gap-1"><span className="text-gray-300 mt-px">-</span>{trimmed}</li> : null;
+                                      })}
+                                    </ul>
                                   </div>
                                 )}
                               </div>
