@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     const now = new Date();
     const mesActual = now.getMonth();
     const anioActual = now.getFullYear();
-    const mesFormula = `AND(YEAR({Fecha})=${anioActual},MONTH({Fecha})=${mesActual + 1})`;
+    const mesFormula = `AND(DATETIME_FORMAT({Fecha},'YYYY')='${anioActual}',DATETIME_FORMAT({Fecha},'M')='${mesActual + 1}')`;
 
     const [facturas, gastos, facturasMes] = await Promise.all([
       listRecords<FacturaFields>(TABLE_IDS.Facturas, { filterByFormula }),
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
       else facturasMesImpagas++;
     }
 
-    const data: DashboardData = {
+    const data: DashboardData & { _debug?: unknown } = {
       ingresos,
       gastos: gastosTotal,
       balance,
@@ -97,6 +97,12 @@ export async function GET(request: NextRequest) {
       facturacionMes,
       facturasMesPagas,
       facturasMesImpagas,
+      _debug: {
+        mesFormula,
+        facturasMesCount: facturasMes.length,
+        totalFacturas: facturas.length,
+        facturasConFecha: facturas.filter(f => f.fields.Fecha).map(f => ({ fecha: f.fields.Fecha, monto: f.fields.Monto, moneda: f.fields.Moneda })).slice(0, 5),
+      },
     };
 
     return Response.json(data);
