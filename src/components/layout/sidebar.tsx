@@ -28,17 +28,43 @@ const navItems = [
   },
 ];
 
+function WtfLogo({ size = 48 }: { size?: number }) {
+  const r = size * 0.22; // circle radius
+  const f = size * 0.18; // font size
+  return (
+    <svg width={size} height={size * 1.15} viewBox="0 0 100 115" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* W */}
+      <circle cx="30" cy="22" r="20" fill="black" />
+      <text x="30" y="22" textAnchor="middle" dominantBaseline="central" fill="white" fontSize={f} fontWeight="700" fontFamily="var(--font-inter), Inter, sans-serif">W</text>
+      {/* T */}
+      <circle cx="22" cy="55" r="20" fill="black" />
+      <text x="22" y="55" textAnchor="middle" dominantBaseline="central" fill="white" fontSize={f} fontWeight="700" fontFamily="var(--font-inter), Inter, sans-serif">T</text>
+      {/* F */}
+      <circle cx="58" cy="48" r="20" fill="black" />
+      <text x="58" y="48" textAnchor="middle" dominantBaseline="central" fill="white" fontSize={f} fontWeight="700" fontFamily="var(--font-inter), Inter, sans-serif">F</text>
+      {/* ¿ */}
+      <circle cx="42" cy="85" r="16" fill="black" />
+      <text x="42" y="86" textAnchor="middle" dominantBaseline="central" fill="white" fontSize={f * 0.9} fontWeight="700" fontFamily="var(--font-inter), Inter, sans-serif">¿</text>
+    </svg>
+  );
+}
+
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
     <aside className="w-16 lg:w-56 border-r bg-white min-h-screen flex flex-col transition-all duration-200">
-      <div className="p-3 lg:p-4 border-b">
-        <div className="w-8 h-8 lg:w-auto lg:h-auto rounded-lg bg-emerald-500 flex items-center justify-center lg:bg-transparent lg:rounded-none">
-          <span className="text-white font-bold text-sm lg:hidden">B</span>
-          <div className="hidden lg:block">
+      <div className="p-3 lg:p-5 border-b">
+        {/* Mobile: small logo */}
+        <div className="lg:hidden flex justify-center">
+          <WtfLogo size={32} />
+        </div>
+        {/* Desktop: logo + text */}
+        <div className="hidden lg:flex flex-col items-center gap-3">
+          <WtfLogo size={52} />
+          <div className="text-center">
             <h1 className="text-base font-bold text-gray-900">Brief Sistema</h1>
-            <p className="text-xs text-gray-400">WTF Agency</p>
+            <p className="text-[10px] text-gray-400 uppercase tracking-widest">WTF Agency</p>
           </div>
         </div>
       </div>
