@@ -2,19 +2,19 @@ export const revalidate = 3600; // Cache 1 hour
 
 export async function GET() {
   try {
-    // Fetch dolar oficial from dolarhoy.com
+    // Fetch dolar oficial venta from dolarhoy.com
     let arsPerUsd = 1415; // fallback
     try {
-      const html = await fetch("https://dolarhoy.com/", {
+      const html = await fetch("https://dolarhoy.com/cotizaciondolaroficial", {
         next: { revalidate: 3600 },
       }).then((r) => r.text());
 
-      // Look for the oficial venta price
-      const oficialMatch = html.match(
-        /Oficial[\s\S]*?Venta[\s\S]*?\$\s*([\d.,]+)/i
+      // Look for the Venta price: <p>Venta</p><p>$1.415,00</p>
+      const ventaMatch = html.match(
+        /Venta\s*<\/p>\s*<p[^>]*>\s*\$\s*([\d.,]+)/i
       );
-      if (oficialMatch) {
-        arsPerUsd = parseFloat(oficialMatch[1].replace(/\./g, "").replace(",", "."));
+      if (ventaMatch) {
+        arsPerUsd = parseFloat(ventaMatch[1].replace(/\./g, "").replace(",", "."));
       }
     } catch {
       console.error("Failed to fetch dolarhoy, using fallback");
@@ -45,7 +45,7 @@ export async function GET() {
       CLP: clpPerUsd,
       PYG: pygPerUsd,
       USD: 1,
-      source: "dolarhoy.com (ARS) + open.er-api.com (CLP/PYG)",
+      source: "dolarhoy.com/cotizaciondolaroficial (ARS) + open.er-api.com (CLP/PYG)",
       updated: new Date().toISOString(),
     });
   } catch (error) {
