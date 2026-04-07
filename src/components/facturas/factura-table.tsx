@@ -182,20 +182,19 @@ export function FacturaTable() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <Table>
+          <Table className="table-fixed w-full">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-8"></TableHead>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Nro</TableHead>
-                <TableHead>Emisor</TableHead>
-                <TableHead>Cliente</TableHead>
-                <TableHead className="text-right">Monto</TableHead>
-                <TableHead className="text-right">USD Ref.</TableHead>
-                <TableHead>Pais</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>PDF</TableHead>
-                <TableHead></TableHead>
+                <TableHead className="w-7 px-1"></TableHead>
+                <TableHead className="w-[80px] px-2">Fecha</TableHead>
+                <TableHead className="w-[90px] px-2">Nro</TableHead>
+                <TableHead className="px-2">Emisor / Cliente</TableHead>
+                <TableHead className="w-[120px] px-2 text-right">Monto</TableHead>
+                <TableHead className="w-[100px] px-2 text-right">USD Ref.</TableHead>
+                <TableHead className="w-[52px] px-2">Pais</TableHead>
+                <TableHead className="w-[90px] px-2">Estado</TableHead>
+                <TableHead className="w-[50px] px-2">PDF</TableHead>
+                <TableHead className="w-[60px] px-1"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -205,35 +204,39 @@ export function FacturaTable() {
                 const mora = isEnMora(f.fields.Fecha, f.fields.Estado as string);
                 return (
                   <TableRow key={f.id} className={mora ? "bg-red-50 hover:bg-red-100" : ""}>
-                    <TableCell className="text-center px-2">
+                    <TableCell className="text-center px-1">
                       {mora && (
                         <span title={`${diasMora(f.fields.Fecha!)} días en mora`} className="relative group">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-red-500 inline-block">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-red-500 inline-block">
                             <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
                             <line x1="4" y1="22" x2="4" y2="15" stroke="currentColor" strokeWidth="2"/>
                           </svg>
-                          <span className="absolute left-6 -top-1 hidden group-hover:block bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-md whitespace-nowrap z-10 shadow-sm">
+                          <span className="absolute left-5 -top-1 hidden group-hover:block bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-md whitespace-nowrap z-10 shadow-sm">
                             {diasMora(f.fields.Fecha!)} días en mora
                           </span>
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className={`whitespace-nowrap ${mora ? "text-red-700 font-medium" : ""}`}>
+                    <TableCell className={`px-2 whitespace-nowrap text-xs ${mora ? "text-red-700 font-medium" : ""}`}>
                       {f.fields.Fecha ? formatDate(f.fields.Fecha) : "-"}
                     </TableCell>
-                    <TableCell>{f.fields.Numero || "-"}</TableCell>
-                    <TableCell>{f.fields.Emisor || "-"}</TableCell>
-                    <TableCell>{f.fields.Cliente || "-"}</TableCell>
-                    <TableCell className="text-right font-mono whitespace-nowrap">
+                    <TableCell className="px-2 text-xs truncate">{f.fields.Numero || "-"}</TableCell>
+                    <TableCell className="px-2">
+                      <div className="text-sm truncate">{f.fields.Emisor || "-"}</div>
+                      {f.fields.Cliente && (
+                        <div className="text-xs text-gray-400 truncate">{f.fields.Cliente}</div>
+                      )}
+                    </TableCell>
+                    <TableCell className="px-2 text-right font-mono whitespace-nowrap text-sm">
                       {formatCurrency(f.fields.Monto, moneda)}
                     </TableCell>
-                    <TableCell className="text-right font-mono whitespace-nowrap text-gray-400">
+                    <TableCell className="px-2 text-right font-mono whitespace-nowrap text-xs text-gray-400">
                       {usdAmount != null
                         ? `US$ ${usdAmount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         : "-"}
                     </TableCell>
-                    <TableCell>{f.fields.Pais}</TableCell>
-                    <TableCell>
+                    <TableCell className="px-2 text-xs">{f.fields.Pais === "Argentina" ? "AR" : f.fields.Pais === "Chile" ? "CL" : f.fields.Pais === "Paraguay" ? "PY" : f.fields.Pais}</TableCell>
+                    <TableCell className="px-2">
                       <StatusBadge
                         estado={f.fields.Estado as EstadoPago}
                         loading={togglingId === f.id}
@@ -242,28 +245,28 @@ export function FacturaTable() {
                         }
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-2">
                       {f.fields.Archivo && f.fields.Archivo.length > 0 ? (
                         <a
                           href={f.fields.Archivo[0].url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline text-sm"
+                          className="text-blue-600 hover:underline text-xs"
                         >
-                          Ver PDF
+                          PDF
                         </a>
                       ) : (
-                        <span className="text-muted-foreground text-sm">-</span>
+                        <span className="text-muted-foreground text-xs">-</span>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-1">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-400 hover:text-red-600 text-xs h-7 px-2"
                         onClick={() => deleteFactura(f.id)}
                       >
-                        Eliminar
+                        Borrar
                       </Button>
                     </TableCell>
                   </TableRow>
