@@ -1,0 +1,25 @@
+import { NextRequest } from "next/server";
+import { extractInvoiceData } from "@/lib/claude";
+
+export async function POST(request: NextRequest) {
+  const formData = await request.formData();
+  const file = formData.get("file") as File | null;
+
+  if (!file) {
+    return Response.json({ error: "No se proporcionó archivo" }, { status: 400 });
+  }
+
+  if (file.type !== "application/pdf") {
+    return Response.json({ error: "El archivo debe ser un PDF" }, { status: 400 });
+  }
+
+  if (file.size > 4 * 1024 * 1024) {
+    return Response.json({ error: "El archivo no puede superar 4MB" }, { status: 413 });
+  }
+
+  const buffer = await file.arrayBuffer();
+  const base64 = Buffer.from(buffer).toString("base64");
+
+  const extracted = await extractInvoiceData(base64);
+  return Response.json(extracted);
+}
