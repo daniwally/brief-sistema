@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 const currencyConfig: Record<Moneda, { symbol: string; decimals: number }> = {
   ARS: { symbol: "$", decimals: 2 },
-  CLP: { symbol: "$", decimals: 0 },
+  CLP: { symbol: "CLP", decimals: 0 },
   PYG: { symbol: "Gs.", decimals: 0 },
   USD: { symbol: "US$", decimals: 2 },
 }

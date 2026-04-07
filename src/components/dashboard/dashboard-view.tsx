@@ -16,6 +16,23 @@ import type { DashboardData, Moneda } from "@/lib/types";
 
 const MONEDAS: Moneda[] = ["USD", "ARS", "CLP", "PYG"];
 
+interface Cotizaciones {
+  ARS: number;
+  CLP: number;
+  PYG: number;
+  USD: number;
+}
+
+function toUsd(monto: number, moneda: Moneda, rates: Cotizaciones): number {
+  const rate = rates[moneda];
+  if (!rate || rate === 0) return 0;
+  return monto / rate;
+}
+
+function formatUsd(amount: number): string {
+  return `US$ ${amount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
 function wrapHandler(fn: (v: string) => void) {
   return (v: string | null) => fn(v ?? "all");
 }
@@ -31,9 +48,17 @@ export function DashboardView() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [rates, setRates] = useState<Cotizaciones | null>(null);
   const [pais, setPais] = useState("all");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
+
+  useEffect(() => {
+    fetch("/api/cotizacion")
+      .then((r) => r.json())
+      .then(setRates)
+      .catch(() => {});
+  }, []);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -120,6 +145,21 @@ export function DashboardView() {
         >
           Limpiar
         </Button>
+        {rates && (
+          <div className="flex items-center gap-4 ml-auto">
+            <span className="text-xs text-gray-400">Cotizacion Ref.:</span>
+            <span className="text-xs font-medium text-gray-600">
+              USD/ARS <span className="text-emerald-600 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+            </span>
+            <span className="text-xs font-medium text-gray-600">
+              USD/CLP <span className="text-emerald-600 font-mono">CLP {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+            </span>
+            <span className="text-xs font-medium text-gray-600">
+              USD/PYG <span className="text-emerald-600 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
+            </span>
+            <span className="text-[10px] text-gray-300">dolarhoy.com</span>
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -169,15 +209,24 @@ export function DashboardView() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {activeMonedas.map((moneda) => (
+              {activeMonedas.map((moneda) => {
+                const showUsd = rates && moneda !== "USD";
+                return (
                 <div key={moneda} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs text-gray-400 uppercase tracking-wide">Balance {moneda}</span>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                      data.balance[moneda] >= 0 ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
-                    }`}>
-                      {data.balance[moneda] >= 0 ? "+" : ""}{formatCurrency(data.balance[moneda], moneda)}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {showUsd && (
+                        <span className="text-xs text-gray-400 font-mono">
+                          {formatUsd(toUsd(data.balance[moneda], moneda, rates))}
+                        </span>
+                      )}
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        data.balance[moneda] >= 0 ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                      }`}>
+                        {data.balance[moneda] >= 0 ? "+" : ""}{formatCurrency(data.balance[moneda], moneda)}
+                      </span>
+                    </div>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -185,18 +234,32 @@ export function DashboardView() {
                         <div className="w-2 h-2 rounded-full bg-emerald-400" />
                         <span className="text-sm text-gray-500">Ingresos</span>
                       </div>
-                      <span className="text-lg font-semibold text-gray-900 font-mono">
-                        {formatCurrency(data.ingresos[moneda], moneda)}
-                      </span>
+                      <div className="text-right">
+                        <span className="text-lg font-semibold text-gray-900 font-mono">
+                          {formatCurrency(data.ingresos[moneda], moneda)}
+                        </span>
+                        {showUsd && (
+                          <p className="text-xs text-gray-400 font-mono">
+                            {formatUsd(toUsd(data.ingresos[moneda], moneda, rates))}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-red-400" />
                         <span className="text-sm text-gray-500">Gastos</span>
                       </div>
-                      <span className="text-lg font-semibold text-gray-900 font-mono">
-                        {formatCurrency(data.gastos[moneda], moneda)}
-                      </span>
+                      <div className="text-right">
+                        <span className="text-lg font-semibold text-gray-900 font-mono">
+                          {formatCurrency(data.gastos[moneda], moneda)}
+                        </span>
+                        {showUsd && (
+                          <p className="text-xs text-gray-400 font-mono">
+                            {formatUsd(toUsd(data.gastos[moneda], moneda, rates))}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     {/* Progress bar */}
                     <div className="mt-2">
@@ -222,7 +285,8 @@ export function DashboardView() {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </>
