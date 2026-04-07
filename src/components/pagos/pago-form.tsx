@@ -131,6 +131,10 @@ export function PagoForm() {
       toast.error("Completa monto y pagador");
       return;
     }
+    if (!selectedFacturaId) {
+      toast.error("Debes seleccionar una factura impaga para vincular el pago");
+      return;
+    }
 
     setLoading(true);
     const netoNum = parseEuropean(form.Neto);
