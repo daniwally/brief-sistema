@@ -6,6 +6,8 @@ export interface Factura {
   Fecha: string;
   Emisor: string;
   CUIT_RUT_RUC: string | null;
+  Cliente: string | null;
+  CUIT_RUT_RUC_Cliente: string | null;
   Descripcion: string | null;
   Pais: "Argentina" | "Chile" | "Paraguay";
   Estado: "Pagado" | "Impago";
@@ -68,6 +70,8 @@ export interface ExtractedInvoice {
   fecha: string | null;
   emisor: string | null;
   cuit_rut_ruc: string | null;
+  cliente: string | null;
+  cuit_rut_ruc_cliente: string | null;
   descripcion: string | null;
   pais: "Argentina" | "Chile" | "Paraguay" | null;
 }

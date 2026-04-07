@@ -24,20 +24,31 @@ function wrapHandler(fn: (v: string) => void) {
 export function DashboardView() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [pais, setPais] = useState("all");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams();
-    if (pais !== "all") params.set("pais", pais);
-    if (desde) params.set("desde", desde);
-    if (hasta) params.set("hasta", hasta);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (pais !== "all") params.set("pais", pais);
+      if (desde) params.set("desde", desde);
+      if (hasta) params.set("hasta", hasta);
 
-    const res = await fetch(`/api/dashboard?${params}`);
-    const d = await res.json();
-    setData(d);
+      const res = await fetch(`/api/dashboard?${params}`);
+      const d = await res.json();
+      if (!res.ok) {
+        setError(d.error || `Error ${res.status}`);
+        setLoading(false);
+        return;
+      }
+      setData(d);
+    } catch (err) {
+      setError(String(err));
+    }
     setLoading(false);
   }, [pais, desde, hasta]);
 
@@ -103,9 +114,14 @@ export function DashboardView() {
 
       {loading ? (
         <p className="text-muted-foreground py-8 text-center">Cargando...</p>
+      ) : error ? (
+        <div className="text-center py-8 space-y-2">
+          <p className="text-red-500">Error al cargar datos</p>
+          <p className="text-xs text-muted-foreground font-mono break-all max-w-lg mx-auto">{error}</p>
+        </div>
       ) : !data ? (
         <p className="text-muted-foreground py-8 text-center">
-          Error al cargar datos
+          Sin datos
         </p>
       ) : (
         <>

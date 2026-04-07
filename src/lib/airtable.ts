@@ -1,6 +1,14 @@
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY!;
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID!;
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY || "";
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || "";
 const BASE_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}`;
+
+export function checkConfig() {
+  return {
+    hasApiKey: !!AIRTABLE_API_KEY && AIRTABLE_API_KEY !== "",
+    hasBaseId: !!AIRTABLE_BASE_ID && AIRTABLE_BASE_ID !== "",
+    baseIdPrefix: AIRTABLE_BASE_ID.substring(0, 6),
+  };
+}
 
 function headers() {
   return {

@@ -24,6 +24,7 @@ interface GastoRecord {
 export function GastoTable() {
   const [gastos, setGastos] = useState<GastoRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [pais, setPais] = useState("all");
   const [estado, setEstado] = useState("all");
@@ -32,15 +33,25 @@ export function GastoTable() {
 
   const fetchGastos = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams();
-    if (pais !== "all") params.set("pais", pais);
-    if (estado !== "all") params.set("estado", estado);
-    if (desde) params.set("desde", desde);
-    if (hasta) params.set("hasta", hasta);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (pais !== "all") params.set("pais", pais);
+      if (estado !== "all") params.set("estado", estado);
+      if (desde) params.set("desde", desde);
+      if (hasta) params.set("hasta", hasta);
 
-    const res = await fetch(`/api/gastos?${params}`);
-    const data = await res.json();
-    setGastos(data);
+      const res = await fetch(`/api/gastos?${params}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || `Error ${res.status}`);
+        setLoading(false);
+        return;
+      }
+      setGastos(data);
+    } catch (err) {
+      setError(String(err));
+    }
     setLoading(false);
   }, [pais, estado, desde, hasta]);
 
@@ -99,6 +110,11 @@ export function GastoTable() {
 
       {loading ? (
         <p className="text-muted-foreground py-8 text-center">Cargando...</p>
+      ) : error ? (
+        <div className="text-center py-8 space-y-2">
+          <p className="text-red-500">Error al cargar gastos</p>
+          <p className="text-xs text-muted-foreground font-mono break-all max-w-lg mx-auto">{error}</p>
+        </div>
       ) : gastos.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <p>No hay gastos registrados</p>

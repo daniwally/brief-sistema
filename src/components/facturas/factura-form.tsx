@@ -30,6 +30,8 @@ export function FacturaForm() {
     Fecha: new Date().toISOString().split("T")[0],
     Emisor: "",
     CUIT_RUT_RUC: "",
+    Cliente: "",
+    CUIT_RUT_RUC_Cliente: "",
     Descripcion: "",
     Pais: "Argentina",
     Estado: "Impago",
@@ -51,6 +53,8 @@ export function FacturaForm() {
       Fecha: data.fecha || prev.Fecha,
       Emisor: data.emisor || prev.Emisor,
       CUIT_RUT_RUC: data.cuit_rut_ruc || prev.CUIT_RUT_RUC,
+      Cliente: data.cliente || prev.Cliente,
+      CUIT_RUT_RUC_Cliente: data.cuit_rut_ruc_cliente || prev.CUIT_RUT_RUC_Cliente,
       Descripcion: data.descripcion || prev.Descripcion,
       Pais: data.pais || prev.Pais,
     }));
@@ -72,6 +76,8 @@ export function FacturaForm() {
       Fecha: form.Fecha,
       Emisor: form.Emisor,
       CUIT_RUT_RUC: form.CUIT_RUT_RUC || null,
+      Cliente: form.Cliente || null,
+      CUIT_RUT_RUC_Cliente: form.CUIT_RUT_RUC_Cliente || null,
       Descripcion: form.Descripcion || null,
       Pais: form.Pais,
       Estado: form.Estado,
@@ -114,16 +120,57 @@ export function FacturaForm() {
           />
         </div>
         <div className="space-y-2">
+          <Label>Fecha</Label>
+          <Input
+            type="date"
+            value={form.Fecha}
+            onChange={(e) => updateField("Fecha", e.target.value)}
+          />
+        </div>
+      </div>
+
+      <h3 className="text-lg font-semibold border-b pb-2">Emisor</h3>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
           <Label>Emisor *</Label>
           <Input
-            placeholder="Empresa emisora"
+            placeholder="Empresa que emite la factura"
             value={form.Emisor}
             onChange={(e) => updateField("Emisor", e.target.value)}
             required
           />
         </div>
+        <div className="space-y-2">
+          <Label>CUIT / RUT / RUC (Emisor)</Label>
+          <Input
+            placeholder="ID fiscal del emisor"
+            value={form.CUIT_RUT_RUC}
+            onChange={(e) => updateField("CUIT_RUT_RUC", e.target.value)}
+          />
+        </div>
       </div>
 
+      <h3 className="text-lg font-semibold border-b pb-2">Cliente</h3>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Cliente</Label>
+          <Input
+            placeholder="Empresa o persona que recibe la factura"
+            value={form.Cliente}
+            onChange={(e) => updateField("Cliente", e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>CUIT / RUT / RUC (Cliente)</Label>
+          <Input
+            placeholder="ID fiscal del cliente"
+            value={form.CUIT_RUT_RUC_Cliente}
+            onChange={(e) => updateField("CUIT_RUT_RUC_Cliente", e.target.value)}
+          />
+        </div>
+      </div>
+
+      <h3 className="text-lg font-semibold border-b pb-2">Detalle</h3>
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label>Monto *</Label>
@@ -143,31 +190,12 @@ export function FacturaForm() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ARS">ARS</SelectItem>
-              <SelectItem value="CLP">CLP</SelectItem>
-              <SelectItem value="PYG">PYG</SelectItem>
-              <SelectItem value="USD">USD</SelectItem>
+              <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
+              <SelectItem value="CLP">CLP - Peso Chileno</SelectItem>
+              <SelectItem value="PYG">PYG - Guaraní</SelectItem>
+              <SelectItem value="USD">USD - Dólar</SelectItem>
             </SelectContent>
           </Select>
-        </div>
-        <div className="space-y-2">
-          <Label>Fecha</Label>
-          <Input
-            type="date"
-            value={form.Fecha}
-            onChange={(e) => updateField("Fecha", e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>CUIT / RUT / RUC</Label>
-          <Input
-            placeholder="ID fiscal"
-            value={form.CUIT_RUT_RUC}
-            onChange={(e) => updateField("CUIT_RUT_RUC", e.target.value)}
-          />
         </div>
         <div className="space-y-2">
           <Label>País</Label>
