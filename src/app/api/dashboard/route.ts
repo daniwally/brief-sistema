@@ -29,9 +29,16 @@ export async function GET(request: NextRequest) {
 
     const filterByFormula = conditions.length > 0 ? `AND(${conditions.join(",")})` : undefined;
 
-    const [facturas, gastos] = await Promise.all([
+    // Facturacion del mes: siempre trae TODAS las facturas (sin filtros de dashboard)
+    const now = new Date();
+    const mesActual = now.getMonth();
+    const anioActual = now.getFullYear();
+    const mesFormula = `AND(YEAR({Fecha})=${anioActual},MONTH({Fecha})=${mesActual + 1})`;
+
+    const [facturas, gastos, facturasMes] = await Promise.all([
       listRecords<FacturaFields>(TABLE_IDS.Facturas, { filterByFormula }),
       listRecords<GastoFields>(TABLE_IDS.Gastos, { filterByFormula }),
+      listRecords<FacturaFields>(TABLE_IDS.Facturas, { filterByFormula: mesFormula }),
     ]);
 
     const ingresos: Record<string, number> = {};
@@ -65,20 +72,18 @@ export async function GET(request: NextRequest) {
     const facturasImpagas = facturas.filter((f) => f.fields.Estado === "Impago").length;
     const gastosImpagos = gastos.filter((g) => g.fields.Estado === "Impago").length;
 
-    // Facturacion del mes en curso por moneda
-    const now = new Date();
-    const mesActual = now.getMonth();
-    const anioActual = now.getFullYear();
+    // Facturacion del mes en curso por moneda (usa facturasMes sin filtros)
     const facturacionMes: Record<string, number> = {};
     for (const m of MONEDAS) facturacionMes[m] = 0;
+    let facturasMesPagas = 0;
+    let facturasMesImpagas = 0;
 
-    for (const f of facturas) {
-      if (f.fields.Fecha && f.fields.Moneda && f.fields.Monto) {
-        const fecha = new Date(f.fields.Fecha + "T00:00:00");
-        if (fecha.getMonth() === mesActual && fecha.getFullYear() === anioActual) {
-          facturacionMes[f.fields.Moneda] += f.fields.Monto;
-        }
+    for (const f of facturasMes) {
+      if (f.fields.Moneda && f.fields.Monto) {
+        facturacionMes[f.fields.Moneda] += f.fields.Monto;
       }
+      if (f.fields.Estado === "Pagado") facturasMesPagas++;
+      else facturasMesImpagas++;
     }
 
     const data: DashboardData = {
@@ -90,6 +95,8 @@ export async function GET(request: NextRequest) {
         gastos_impagos: gastosImpagos,
       },
       facturacionMes,
+      facturasMesPagas,
+      facturasMesImpagas,
     };
 
     return Response.json(data);

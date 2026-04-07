@@ -266,6 +266,10 @@ export function DashboardView() {
                     ))}
                   </div>
                 )}
+                <div className="flex gap-4 mt-3 text-xs text-gray-400">
+                  <span>{data.facturasMesPagas} pagada{data.facturasMesPagas !== 1 ? "s" : ""}</span>
+                  <span className={data.facturasMesImpagas > 0 ? "text-amber-500 font-medium" : ""}>{data.facturasMesImpagas} impaga{data.facturasMesImpagas !== 1 ? "s" : ""}</span>
+                </div>
               </div>
             );
           })()}

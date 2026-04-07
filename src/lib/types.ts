@@ -65,6 +65,8 @@ export interface DashboardData {
     gastos_impagos: number;
   };
   facturacionMes: Record<string, number>;
+  facturasMesPagas: number;
+  facturasMesImpagas: number;
 }
 
 export interface ExtractedInvoice {
