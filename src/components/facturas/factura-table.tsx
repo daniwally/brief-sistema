@@ -200,13 +200,13 @@ export function FacturaTable() {
           <div className="flex items-center gap-4 pt-2 border-t border-gray-100">
             <span className="text-xs text-gray-400">Cotizacion Ref.:</span>
             <span className="text-xs font-medium text-gray-600">
-              USD/ARS <span className="text-gray-900 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+              USD/ARS <span className="text-emerald-600 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
             </span>
             <span className="text-xs font-medium text-gray-600">
-              USD/CLP <span className="text-gray-900 font-mono">$ {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+              USD/CLP <span className="text-emerald-600 font-mono">$ {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
             </span>
             <span className="text-xs font-medium text-gray-600">
-              USD/PYG <span className="text-gray-900 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
+              USD/PYG <span className="text-emerald-600 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
             </span>
             <span className="text-[10px] text-gray-300">dolarhoy.com</span>
           </div>
@@ -296,7 +296,7 @@ export function FacturaTable() {
                         />
                         {pago && (
                           <p
-                            className="text-[10px] text-gray-900 mt-0.5 cursor-default"
+                            className="text-[10px] text-emerald-600 mt-0.5 cursor-default"
                             onMouseEnter={(e) => {
                               const rect = e.currentTarget.getBoundingClientRect();
                               setPopoverPos({ top: rect.top, left: rect.left - 288 });
@@ -384,7 +384,7 @@ export function FacturaTable() {
                 )}
                 <div className="flex justify-between font-semibold">
                   <span className="text-gray-500">Total</span>
-                  <span className="font-mono text-gray-900">{formatCurrency(p.fields.Monto, p.fields.Moneda as Moneda)}</span>
+                  <span className="font-mono text-emerald-600">{formatCurrency(p.fields.Monto, p.fields.Moneda as Moneda)}</span>
                 </div>
               </div>
               {p.fields.DetalleImpuestos && (
