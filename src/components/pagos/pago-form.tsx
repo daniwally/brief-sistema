@@ -181,9 +181,19 @@ export function PagoForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      <h2 className="text-2xl font-bold">Nuevo Pago</h2>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Nuevo Pago</h2>
+          <p className="text-sm text-gray-400">Registrar comprobante de pago</p>
+        </div>
+        <Button type="button" variant="outline" className="rounded-xl" onClick={() => router.push("/pagos")}>
+          Volver a Pagos
+        </Button>
+      </div>
 
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-6">
       <PdfUploaderPago onExtracted={handleExtracted} />
 
       {pdfName && (
@@ -363,14 +373,17 @@ export function PagoForm() {
         />
       </div>
 
+      </div>
+
       <div className="flex gap-4">
-        <Button type="submit" disabled={loading} className="bg-gray-900 hover:bg-gray-800 text-white">
+        <Button type="submit" disabled={loading} className="rounded-xl bg-gray-900 hover:bg-gray-800 text-white shadow-sm">
           {loading ? "Guardando..." : "Registrar Pago"}
         </Button>
-        <Button type="button" variant="outline" onClick={() => router.push("/pagos")}>
+        <Button type="button" variant="outline" className="rounded-xl" onClick={() => router.push("/pagos")}>
           Cancelar
         </Button>
       </div>
     </form>
+    </div>
   );
 }

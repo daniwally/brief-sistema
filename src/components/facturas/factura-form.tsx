@@ -131,17 +131,29 @@ export function FacturaForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      <h2 className="text-2xl font-bold">Nueva Venta</h2>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Nueva Venta</h2>
+          <p className="text-sm text-gray-400">Registrar factura de venta</p>
+        </div>
+        <Button type="button" variant="outline" className="rounded-xl" onClick={() => router.push("/facturas")}>
+          Volver a Ventas
+        </Button>
+      </div>
 
-      <PdfUploader onExtracted={handleExtracted} />
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-6">
+          <PdfUploader onExtracted={handleExtracted} />
 
-      {pdfName && (
-        <p className="text-sm text-muted-foreground">
-          PDF cargado: <span className="font-medium">{pdfName}</span>
-        </p>
-      )}
+          {pdfName && (
+            <p className="text-sm text-muted-foreground">
+              PDF cargado: <span className="font-medium">{pdfName}</span>
+            </p>
+          )}
+        </div>
 
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-6">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Número de Factura</Label>
@@ -314,14 +326,17 @@ export function FacturaForm() {
         />
       </div>
 
-      <div className="flex gap-4">
-        <Button type="submit" disabled={loading} className="bg-gray-900 hover:bg-gray-800 text-white">
-          {loading ? "Guardando..." : "Guardar Venta"}
-        </Button>
-        <Button type="button" variant="outline" onClick={() => router.push("/facturas")}>
-          Cancelar
-        </Button>
-      </div>
-    </form>
+        </div>
+
+        <div className="flex gap-4">
+          <Button type="submit" disabled={loading} className="rounded-xl bg-gray-900 hover:bg-gray-800 text-white shadow-sm">
+            {loading ? "Guardando..." : "Guardar Venta"}
+          </Button>
+          <Button type="button" variant="outline" className="rounded-xl" onClick={() => router.push("/facturas")}>
+            Cancelar
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }
