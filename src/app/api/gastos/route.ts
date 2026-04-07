@@ -44,21 +44,19 @@ export async function POST(request: NextRequest) {
     const fields = JSON.parse(fieldsJson);
     const record = await createRecord<GastoFields>(TABLE_IDS.Gastos, fields);
 
+    let pdfUrl: string | null = null;
     if (file) {
-      try {
-        const blob = await put(`gastos/${record.id}/${file.name}`, file, {
-          access: "public",
-        });
+      const blob = await put(`gastos/${record.id}/${file.name}`, file, {
+        access: "public",
+      });
+      pdfUrl = blob.url;
 
-        await updateRecord(TABLE_IDS.Gastos, record.id, {
-          Archivo: [{ url: blob.url }],
-        });
-      } catch (err) {
-        console.error("Failed to upload PDF:", err);
-      }
+      await updateRecord(TABLE_IDS.Gastos, record.id, {
+        Archivo: [{ url: blob.url }],
+      });
     }
 
-    return Response.json(record, { status: 201 });
+    return Response.json({ ...record, pdfUrl }, { status: 201 });
   } catch (error) {
     console.error("Gastos POST error:", error);
     return Response.json({ error: String(error) }, { status: 500 });

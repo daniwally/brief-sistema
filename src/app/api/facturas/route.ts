@@ -43,22 +43,19 @@ export async function POST(request: NextRequest) {
     const record = await createRecord<FacturaFields>(TABLE_IDS.Facturas, fields);
 
     // Upload PDF to Vercel Blob, then attach URL to Airtable record
+    let pdfUrl: string | null = null;
     if (file) {
-      try {
-        const blob = await put(`facturas/${record.id}/${file.name}`, file, {
-          access: "public",
-        });
+      const blob = await put(`facturas/${record.id}/${file.name}`, file, {
+        access: "public",
+      });
+      pdfUrl = blob.url;
 
-        // Update Airtable record with the attachment URL
-        await updateRecord(TABLE_IDS.Facturas, record.id, {
-          Archivo: [{ url: blob.url }],
-        });
-      } catch (err) {
-        console.error("Failed to upload PDF:", err);
-      }
+      await updateRecord(TABLE_IDS.Facturas, record.id, {
+        Archivo: [{ url: blob.url }],
+      });
     }
 
-    return Response.json(record, { status: 201 });
+    return Response.json({ ...record, pdfUrl }, { status: 201 });
   } catch (error) {
     console.error("Facturas POST error:", error);
     return Response.json({ error: String(error) }, { status: 500 });
