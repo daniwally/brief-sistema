@@ -190,8 +190,7 @@ export function FacturaTable() {
                 <TableHead className="w-[80px] px-2">Fecha</TableHead>
                 <TableHead className="w-[90px] px-2">Nro</TableHead>
                 <TableHead className="px-2">Emisor / Cliente</TableHead>
-                <TableHead className="w-[120px] px-2 text-right">Monto</TableHead>
-                <TableHead className="w-[100px] px-2 text-right">USD Ref.</TableHead>
+                <TableHead className="w-[140px] px-2 text-right">Monto</TableHead>
                 <TableHead className="w-[52px] px-2">Pais</TableHead>
                 <TableHead className="w-[90px] px-2">Estado</TableHead>
                 <TableHead className="w-[50px] px-2">PDF</TableHead>
@@ -228,13 +227,13 @@ export function FacturaTable() {
                         <div className="text-xs text-gray-400 truncate">{f.fields.Cliente}</div>
                       )}
                     </TableCell>
-                    <TableCell className="px-2 text-right font-mono whitespace-nowrap text-sm">
-                      {formatCurrency(f.fields.Monto, moneda)}
-                    </TableCell>
-                    <TableCell className="px-2 text-right font-mono whitespace-nowrap text-xs text-gray-400">
-                      {usdAmount != null
-                        ? `US$ ${usdAmount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                        : "-"}
+                    <TableCell className="px-2 text-right font-mono whitespace-nowrap">
+                      <div className="text-sm">{formatCurrency(f.fields.Monto, moneda)}</div>
+                      {usdAmount != null && moneda !== "USD" && (
+                        <div className="text-[11px] text-gray-400">
+                          US$ {usdAmount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell className="px-2 text-xs">{f.fields.Pais === "Argentina" ? "AR" : f.fields.Pais === "Chile" ? "CL" : f.fields.Pais === "Paraguay" ? "PY" : f.fields.Pais}</TableCell>
                     <TableCell className="px-2">
