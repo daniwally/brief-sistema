@@ -308,7 +308,10 @@ export function DashboardView() {
                 return (
                 <div key={moneda} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs text-gray-400 uppercase tracking-wide">Balance {moneda}</span>
+                    <span className="text-xs text-gray-400 uppercase tracking-wide flex items-center gap-1.5">
+                      <span className="text-base">{moneda === "ARS" ? "🇦🇷" : moneda === "CLP" ? "🇨🇱" : moneda === "PYG" ? "🇵🇾" : "🌎"}</span>
+                      Balance {moneda}
+                    </span>
                     <div className="flex items-center gap-2">
                       {showUsd && (
                         <span className="text-xs text-gray-400 font-mono">
