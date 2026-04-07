@@ -189,7 +189,7 @@ export function FacturaTable() {
                 <TableHead className="w-7 px-1"></TableHead>
                 <TableHead className="w-[80px] px-2">Fecha</TableHead>
                 <TableHead className="w-[90px] px-2">Nro</TableHead>
-                <TableHead className="px-2">Emisor / Cliente</TableHead>
+                <TableHead className="px-2">Cliente / Emisor</TableHead>
                 <TableHead className="w-[140px] px-2 text-right">Monto</TableHead>
                 <TableHead className="w-[52px] px-2">Pais</TableHead>
                 <TableHead className="w-[90px] px-2">Estado</TableHead>
@@ -222,9 +222,9 @@ export function FacturaTable() {
                     </TableCell>
                     <TableCell className="px-2 text-xs truncate">{f.fields.Numero || "-"}</TableCell>
                     <TableCell className="px-2">
-                      <div className="text-sm truncate">{f.fields.Emisor || "-"}</div>
-                      {f.fields.Cliente && (
-                        <div className="text-xs text-gray-400 truncate">{f.fields.Cliente}</div>
+                      <div className="text-sm truncate">{f.fields.Cliente || "-"}</div>
+                      {f.fields.Emisor && (
+                        <div className="text-xs text-gray-400 truncate">{f.fields.Emisor}</div>
                       )}
                     </TableCell>
                     <TableCell className="px-2 text-right font-mono whitespace-nowrap">
