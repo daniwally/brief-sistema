@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PdfUploader } from "./pdf-uploader";
+import { DateInput } from "@/components/shared/date-input";
 import { toast } from "sonner";
 import type { ExtractedInvoice } from "@/lib/types";
 
@@ -152,10 +153,9 @@ export function FacturaForm() {
         </div>
         <div className="space-y-2">
           <Label>Fecha</Label>
-          <Input
-            type="date"
+          <DateInput
             value={form.Fecha}
-            onChange={(e) => updateField("Fecha", e.target.value)}
+            onChange={(v) => updateField("Fecha", v)}
           />
         </div>
       </div>

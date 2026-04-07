@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PdfUploaderPago } from "./pdf-uploader-pago";
+import { DateInput } from "@/components/shared/date-input";
 import { toast } from "sonner";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { ExtractedPayment, Moneda } from "@/lib/types";
@@ -231,10 +232,9 @@ export function PagoForm() {
         </div>
         <div className="space-y-2">
           <Label>Fecha</Label>
-          <Input
-            type="date"
+          <DateInput
             value={form.Fecha}
-            onChange={(e) => updateField("Fecha", e.target.value)}
+            onChange={(v) => updateField("Fecha", v)}
           />
         </div>
       </div>

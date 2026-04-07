@@ -20,8 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DateInput } from "@/components/shared/date-input";
 
 interface PagoRecord {
   id: string;
@@ -104,20 +104,18 @@ export function PagoTable() {
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-gray-400">Desde</Label>
-            <Input
-              type="date"
+            <DateInput
               value={desde}
-              onChange={(e) => setDesde(e.target.value)}
-              className="w-[160px] border-gray-200 rounded-xl"
+              onChange={setDesde}
+              className="w-[120px] border-gray-200 rounded-xl"
             />
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-gray-400">Hasta</Label>
-            <Input
-              type="date"
+            <DateInput
               value={hasta}
-              onChange={(e) => setHasta(e.target.value)}
-              className="w-[160px] border-gray-200 rounded-xl"
+              onChange={setHasta}
+              className="w-[120px] border-gray-200 rounded-xl"
             />
           </div>
           <Button

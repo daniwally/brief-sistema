@@ -7,9 +7,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { DateInput } from "./date-input";
 
 interface FiltersProps {
   pais: string;
@@ -69,20 +69,18 @@ export function Filters({
       </div>
       <div className="space-y-1">
         <Label className="text-xs">Desde</Label>
-        <Input
-          type="date"
+        <DateInput
           value={desde}
-          onChange={(e) => setDesde(e.target.value)}
-          className="w-[160px]"
+          onChange={setDesde}
+          className="w-[120px]"
         />
       </div>
       <div className="space-y-1">
         <Label className="text-xs">Hasta</Label>
-        <Input
-          type="date"
+        <DateInput
           value={hasta}
-          onChange={(e) => setHasta(e.target.value)}
-          className="w-[160px]"
+          onChange={setHasta}
+          className="w-[120px]"
         />
       </div>
       <Button variant="outline" size="sm" onClick={onClear}>

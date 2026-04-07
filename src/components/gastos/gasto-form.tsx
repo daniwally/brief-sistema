@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DateInput } from "@/components/shared/date-input";
 import {
   Select,
   SelectContent,
@@ -120,10 +121,9 @@ export function GastoForm() {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Fecha</Label>
-          <Input
-            type="date"
+          <DateInput
             value={form.Fecha}
-            onChange={(e) => updateField("Fecha", e.target.value)}
+            onChange={(v) => updateField("Fecha", v)}
           />
         </div>
         <div className="space-y-2">
