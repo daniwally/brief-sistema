@@ -174,7 +174,7 @@ export function FacturaTable() {
           <p className="text-sm text-gray-400">Facturacion AR / CL / PY</p>
         </div>
         <Link href="/facturas/nueva">
-          <Button className="rounded-xl bg-violet-500 hover:bg-violet-600 text-white shadow-sm">+ Nueva Venta</Button>
+          <Button className="rounded-xl bg-gray-900 hover:bg-gray-800 text-white shadow-sm">+ Nueva Venta</Button>
         </Link>
       </div>
 
@@ -200,13 +200,13 @@ export function FacturaTable() {
           <div className="flex items-center gap-4 pt-2 border-t border-gray-100">
             <span className="text-xs text-gray-400">Cotizacion Ref.:</span>
             <span className="text-xs font-medium text-gray-600">
-              USD/ARS <span className="text-violet-600 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+              USD/ARS <span className="text-gray-900 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
             </span>
             <span className="text-xs font-medium text-gray-600">
-              USD/CLP <span className="text-violet-600 font-mono">$ {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+              USD/CLP <span className="text-gray-900 font-mono">$ {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
             </span>
             <span className="text-xs font-medium text-gray-600">
-              USD/PYG <span className="text-violet-600 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
+              USD/PYG <span className="text-gray-900 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
             </span>
             <span className="text-[10px] text-gray-300">dolarhoy.com</span>
           </div>
@@ -280,7 +280,7 @@ export function FacturaTable() {
                       <div className="text-sm">{formatCurrency(f.fields.Monto, moneda)}</div>
                       {usdAmount != null && moneda !== "USD" && (
                         <div className="text-[11px] text-gray-400">
-                          US$ {usdAmount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          USD {usdAmount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </div>
                       )}
                     </TableCell>
@@ -296,7 +296,7 @@ export function FacturaTable() {
                         />
                         {pago && (
                           <p
-                            className="text-[10px] text-violet-600 mt-0.5 cursor-default"
+                            className="text-[10px] text-gray-900 mt-0.5 cursor-default"
                             onMouseEnter={(e) => {
                               const rect = e.currentTarget.getBoundingClientRect();
                               setPopoverPos({ top: rect.top, left: rect.left - 288 });
@@ -384,7 +384,7 @@ export function FacturaTable() {
                 )}
                 <div className="flex justify-between font-semibold">
                   <span className="text-gray-500">Total</span>
-                  <span className="font-mono text-violet-600">{formatCurrency(p.fields.Monto, p.fields.Moneda as Moneda)}</span>
+                  <span className="font-mono text-gray-900">{formatCurrency(p.fields.Monto, p.fields.Moneda as Moneda)}</span>
                 </div>
               </div>
               {p.fields.DetalleImpuestos && (

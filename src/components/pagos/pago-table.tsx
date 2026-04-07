@@ -81,7 +81,7 @@ export function PagoTable() {
           <p className="text-sm text-gray-400">Registro de pagos recibidos</p>
         </div>
         <Link href="/pagos/nuevo">
-          <Button className="rounded-xl bg-violet-500 hover:bg-violet-600 text-white shadow-sm">+ Nuevo Pago</Button>
+          <Button className="rounded-xl bg-gray-900 hover:bg-gray-800 text-white shadow-sm">+ Nuevo Pago</Button>
         </Link>
       </div>
 

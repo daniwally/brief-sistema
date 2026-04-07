@@ -63,7 +63,7 @@ function toUsd(monto: number, moneda: Moneda, rates: Cotizaciones): number {
 }
 
 function formatUsd(amount: number): string {
-  return `US$ ${amount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `USD ${amount.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function wrapHandler(fn: (v: string) => void) {
@@ -205,13 +205,13 @@ export function DashboardView() {
           <div className="flex items-center gap-4 ml-auto">
             <span className="text-xs text-gray-400">Cotizacion Ref.:</span>
             <span className="text-xs font-medium text-gray-600">
-              USD/ARS <span className="text-violet-600 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+              USD/ARS <span className="text-gray-900 font-mono">$ {rates.ARS.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
             </span>
             <span className="text-xs font-medium text-gray-600">
-              USD/CLP <span className="text-violet-600 font-mono">CLP {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
+              USD/CLP <span className="text-gray-900 font-mono">CLP {rates.CLP.toLocaleString("de-DE", { maximumFractionDigits: 2 })}</span>
             </span>
             <span className="text-xs font-medium text-gray-600">
-              USD/PYG <span className="text-violet-600 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
+              USD/PYG <span className="text-gray-900 font-mono">Gs. {rates.PYG.toLocaleString("de-DE", { maximumFractionDigits: 0 })}</span>
             </span>
             <span className="text-[10px] text-gray-300">dolarhoy.com</span>
           </div>
@@ -254,7 +254,7 @@ export function DashboardView() {
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs text-gray-400 uppercase tracking-wide">Facturacion {mesLabel}</p>
                 </div>
-                <p className="text-4xl font-bold text-violet-600 font-mono">
+                <p className="text-4xl font-bold text-gray-900 font-mono">
                   {formatUsd(totalUsdMes)}
                 </p>
                 {data.facturacionMes && (
@@ -277,14 +277,14 @@ export function DashboardView() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Ventas Impagas</p>
-              <p className={`text-4xl font-bold ${data.pendientes.facturas_impagas > 0 ? "text-amber-500" : "text-violet-500"}`}>
+              <p className={`text-4xl font-bold ${data.pendientes.facturas_impagas > 0 ? "text-amber-500" : "text-gray-900"}`}>
                 {data.pendientes.facturas_impagas}
               </p>
               <p className="text-xs text-gray-400 mt-2">pendientes de cobro</p>
             </div>
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Compras Impagas</p>
-              <p className={`text-4xl font-bold ${data.pendientes.gastos_impagos > 0 ? "text-amber-500" : "text-violet-500"}`}>
+              <p className={`text-4xl font-bold ${data.pendientes.gastos_impagos > 0 ? "text-amber-500" : "text-gray-900"}`}>
                 {data.pendientes.gastos_impagos}
               </p>
               <p className="text-xs text-gray-400 mt-2">pendientes de pago</p>
@@ -312,7 +312,7 @@ export function DashboardView() {
                         </span>
                       )}
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        data.balance[moneda] >= 0 ? "bg-violet-50 text-violet-600" : "bg-red-50 text-red-600"
+                        data.balance[moneda] >= 0 ? "bg-gray-100 text-gray-900" : "bg-red-50 text-red-600"
                       }`}>
                         {data.balance[moneda] >= 0 ? "+" : ""}{formatCurrency(data.balance[moneda], moneda)}
                       </span>
@@ -321,7 +321,7 @@ export function DashboardView() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-violet-400" />
+                        <div className="w-2 h-2 rounded-full bg-gray-800" />
                         <span className="text-sm text-gray-500">Ingresos</span>
                       </div>
                       <div className="text-right">
@@ -357,7 +357,7 @@ export function DashboardView() {
                         {data.ingresos[moneda] > 0 && (
                           <div
                             className={`h-full rounded-full transition-all ${
-                              data.balance[moneda] >= 0 ? "bg-violet-400" : "bg-red-400"
+                              data.balance[moneda] >= 0 ? "bg-gray-800" : "bg-red-400"
                             }`}
                             style={{
                               width: `${Math.min(100, (data.gastos[moneda] / data.ingresos[moneda]) * 100)}%`,

@@ -10,7 +10,7 @@ const currencyConfig: Record<Moneda, { symbol: string; decimals: number }> = {
   ARS: { symbol: "$", decimals: 2 },
   CLP: { symbol: "CLP", decimals: 0 },
   PYG: { symbol: "Gs.", decimals: 0 },
-  USD: { symbol: "US$", decimals: 2 },
+  USD: { symbol: "USD", decimals: 2 },
 }
 
 export function formatCurrency(amount: number, moneda: Moneda): string {

@@ -40,46 +40,58 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-16 lg:w-56 bg-violet-600 min-h-screen flex flex-col transition-all duration-200">
-      <div className="p-3 lg:p-5 border-b border-violet-500/30">
-        {/* Mobile: small logo */}
-        <div className="lg:hidden flex justify-center">
-          <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={35} height={35} className="object-contain brightness-0 invert" />
-        </div>
-        {/* Desktop: logo + text */}
-        <div className="hidden lg:flex flex-col items-center gap-3">
-          <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={100} height={100} className="object-contain brightness-0 invert" />
-          <div className="text-center">
-            <h1 className="text-base font-bold text-white">Brief Sistema</h1>
-            <p className="text-[10px] text-violet-200 uppercase tracking-widest">WTF Agency</p>
+    <aside className="w-16 lg:w-56 bg-gray-950 min-h-screen flex flex-col transition-all duration-200 relative overflow-hidden">
+      {/* Background image */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/bg-login.png"
+          alt=""
+          fill
+          className="object-cover opacity-20"
+          priority
+        />
+      </div>
+      <div className="relative z-10 flex flex-col flex-1">
+        <div className="p-3 lg:p-5 border-b border-white/10">
+          {/* Mobile: small logo */}
+          <div className="lg:hidden flex justify-center">
+            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={35} height={35} className="object-contain brightness-0 invert" />
+          </div>
+          {/* Desktop: logo + text */}
+          <div className="hidden lg:flex flex-col items-center gap-3">
+            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={100} height={100} className="object-contain brightness-0 invert" />
+            <div className="text-center">
+              <h1 className="text-base font-bold text-white">Brief Sistema</h1>
+              <p className="text-[10px] text-gray-400 uppercase tracking-widest">WTF Agency</p>
+            </div>
           </div>
         </div>
+        <nav className="flex-1 p-2 lg:p-3 space-y-1">
+          {navItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
+                  isActive
+                    ? "bg-white/15 text-white"
+                    : "text-gray-400 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                <span className={cn(
+                  "flex-shrink-0",
+                  isActive ? "text-white" : "text-gray-500"
+                )}>
+                  {item.icon}
+                </span>
+                <span className="hidden lg:block">{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </div>
-      <nav className="flex-1 p-2 lg:p-3 space-y-1">
-        {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
-                isActive
-                  ? "bg-white/20 text-white"
-                  : "text-violet-200 hover:bg-white/10 hover:text-white"
-              )}
-            >
-              <span className={cn(
-                "flex-shrink-0",
-                isActive ? "text-white" : "text-violet-300"
-              )}>
-                {item.icon}
-              </span>
-              <span className="hidden lg:block">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
     </aside>
   );
 }

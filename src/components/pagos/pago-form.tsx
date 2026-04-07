@@ -207,8 +207,8 @@ export function PagoForm() {
                 onClick={() => selectFactura(selectedFacturaId === f.id ? null : f.id)}
                 className={`p-3 rounded-xl border cursor-pointer transition-all ${
                   selectedFacturaId === f.id
-                    ? "border-violet-500 bg-violet-50 ring-1 ring-violet-500"
-                    : "border-gray-200 hover:border-violet-300 hover:bg-violet-50/30"
+                    ? "border-gray-900 bg-gray-50 ring-1 ring-gray-900"
+                    : "border-gray-200 hover:border-gray-400 hover:bg-gray-50/30"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -226,7 +226,7 @@ export function PagoForm() {
                   </div>
                 </div>
                 {selectedFacturaId === f.id && (
-                  <p className="text-xs text-violet-600 mt-1">Se marcara como Pagada al guardar el pago</p>
+                  <p className="text-xs text-gray-900 mt-1">Se marcara como Pagada al guardar el pago</p>
                 )}
               </div>
             ))}
@@ -364,7 +364,7 @@ export function PagoForm() {
       </div>
 
       <div className="flex gap-4">
-        <Button type="submit" disabled={loading} className="bg-violet-500 hover:bg-violet-600 text-white">
+        <Button type="submit" disabled={loading} className="bg-gray-900 hover:bg-gray-800 text-white">
           {loading ? "Guardando..." : "Registrar Pago"}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.push("/pagos")}>

@@ -90,7 +90,7 @@ export function GastoTable() {
           <p className="text-sm text-gray-400">Registro de compras y gastos</p>
         </div>
         <Link href="/gastos/nuevo">
-          <Button className="rounded-xl bg-violet-500 hover:bg-violet-600 text-white shadow-sm">+ Nueva Compra</Button>
+          <Button className="rounded-xl bg-gray-900 hover:bg-gray-800 text-white shadow-sm">+ Nueva Compra</Button>
         </Link>
       </div>
 

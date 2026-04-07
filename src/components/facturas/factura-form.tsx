@@ -315,7 +315,7 @@ export function FacturaForm() {
       </div>
 
       <div className="flex gap-4">
-        <Button type="submit" disabled={loading} className="bg-violet-500 hover:bg-violet-600 text-white">
+        <Button type="submit" disabled={loading} className="bg-gray-900 hover:bg-gray-800 text-white">
           {loading ? "Guardando..." : "Guardar Venta"}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.push("/facturas")}>
