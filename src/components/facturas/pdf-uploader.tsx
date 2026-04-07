@@ -36,13 +36,19 @@ export function PdfUploader({ onExtracted }: PdfUploaderProps) {
         body: formData,
       });
 
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Respuesta inválida del servidor: ${text.substring(0, 200)}`);
+      }
+
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(data.error || "Error al procesar el PDF");
       }
 
-      const extracted = await res.json();
-      onExtracted(extracted, file);
+      onExtracted(data, file);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al procesar el PDF");
     } finally {

@@ -72,6 +72,12 @@ export async function extractInvoiceData(pdfBase64: string): Promise<ExtractedIn
     throw new Error("No text response from Claude");
   }
 
-  const parsed = JSON.parse(textContent.text);
+  // Strip markdown code fences if Claude wraps the JSON
+  let text = textContent.text.trim();
+  if (text.startsWith("```")) {
+    text = text.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+  }
+
+  const parsed = JSON.parse(text);
   return parsed as ExtractedInvoice;
 }

@@ -17,9 +17,17 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "El archivo no puede superar 4MB" }, { status: 413 });
   }
 
-  const buffer = await file.arrayBuffer();
-  const base64 = Buffer.from(buffer).toString("base64");
+  try {
+    const buffer = await file.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString("base64");
 
-  const extracted = await extractInvoiceData(base64);
-  return Response.json(extracted);
+    const extracted = await extractInvoiceData(base64);
+    return Response.json(extracted);
+  } catch (error) {
+    console.error("Extract invoice error:", error);
+    return Response.json(
+      { error: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
+    );
+  }
 }
