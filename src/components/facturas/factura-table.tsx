@@ -21,6 +21,19 @@ interface FacturaRecord {
   fields: Omit<Factura, "id">;
 }
 
+interface PagoRecord {
+  id: string;
+  fields: {
+    Monto: number;
+    Moneda: string;
+    Fecha: string;
+    Pagador: string;
+    FacturaRef: string | null;
+    Descripcion: string | null;
+    Pais: string;
+  };
+}
+
 interface Cotizaciones {
   ARS: number;
   CLP: number;
@@ -49,12 +62,24 @@ function diasMora(fecha: string): number {
   return totalDias - 31;
 }
 
+function findPago(factura: FacturaRecord, pagos: PagoRecord[]): PagoRecord | undefined {
+  if (!factura.fields.Numero) return undefined;
+  return pagos.find((p) =>
+    p.fields.FacturaRef && (
+      p.fields.FacturaRef === factura.fields.Numero ||
+      p.fields.FacturaRef.includes(factura.fields.Numero!) ||
+      (factura.fields.Numero && factura.fields.Numero.includes(p.fields.FacturaRef))
+    )
+  );
+}
+
 export function FacturaTable() {
   const [facturas, setFacturas] = useState<FacturaRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [rates, setRates] = useState<Cotizaciones | null>(null);
+  const [pagos, setPagos] = useState<PagoRecord[]>([]);
   const [pais, setPais] = useState("all");
   const [estado, setEstado] = useState("all");
   const [desde, setDesde] = useState("");
@@ -64,6 +89,10 @@ export function FacturaTable() {
     fetch("/api/cotizacion")
       .then((r) => r.json())
       .then(setRates)
+      .catch(() => {});
+    fetch("/api/pagos")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setPagos(data); })
       .catch(() => {});
   }, []);
 
@@ -202,6 +231,7 @@ export function FacturaTable() {
                 const moneda = f.fields.Moneda as Moneda;
                 const usdAmount = rates ? toUsd(f.fields.Monto, moneda, rates) : null;
                 const mora = isEnMora(f.fields.Fecha, f.fields.Estado as string);
+                const pago = f.fields.Estado === "Pagado" ? findPago(f, pagos) : undefined;
                 return (
                   <TableRow key={f.id} className={mora ? "bg-red-50 hover:bg-red-100" : ""}>
                     <TableCell className="text-center px-1">
@@ -237,13 +267,43 @@ export function FacturaTable() {
                     </TableCell>
                     <TableCell className="px-2 text-xs">{f.fields.Pais === "Argentina" ? "AR" : f.fields.Pais === "Chile" ? "CL" : f.fields.Pais === "Paraguay" ? "PY" : f.fields.Pais}</TableCell>
                     <TableCell className="px-2">
-                      <StatusBadge
-                        estado={f.fields.Estado as EstadoPago}
-                        loading={togglingId === f.id}
-                        onToggle={() =>
-                          toggleEstado(f.id, f.fields.Estado as EstadoPago)
-                        }
-                      />
+                      <div className="relative group/estado">
+                        <StatusBadge
+                          estado={f.fields.Estado as EstadoPago}
+                          loading={togglingId === f.id}
+                          onToggle={() =>
+                            toggleEstado(f.id, f.fields.Estado as EstadoPago)
+                          }
+                        />
+                        {pago && (
+                          <>
+                            <p className="text-[10px] text-emerald-600 mt-0.5">{formatDate(pago.fields.Fecha)}</p>
+                            <div className="absolute right-0 top-full mt-1 hidden group-hover/estado:block bg-white border border-gray-200 rounded-xl shadow-lg p-3 z-20 w-56">
+                              <p className="text-xs font-semibold text-gray-700 mb-2">Resumen del pago</p>
+                              <div className="space-y-1.5 text-xs">
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Pagador</span>
+                                  <span className="font-medium text-gray-700 truncate ml-2">{pago.fields.Pagador}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Monto</span>
+                                  <span className="font-mono font-medium text-emerald-600">{formatCurrency(pago.fields.Monto, pago.fields.Moneda as Moneda)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Fecha pago</span>
+                                  <span className="text-gray-700">{formatDate(pago.fields.Fecha)}</span>
+                                </div>
+                                {pago.fields.Descripcion && (
+                                  <div className="pt-1 border-t border-gray-100">
+                                    <span className="text-gray-400">Concepto</span>
+                                    <p className="text-gray-600 mt-0.5">{pago.fields.Descripcion}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="px-2">
                       {f.fields.Archivo && f.fields.Archivo.length > 0 ? (
