@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { listRecords, createRecord, uploadAttachment, TABLE_IDS } from "@/lib/airtable";
+import { put } from "@vercel/blob";
+import { listRecords, createRecord, updateRecord, TABLE_IDS } from "@/lib/airtable";
 import type { Gasto } from "@/lib/types";
 
 type GastoFields = Omit<Gasto, "id">;
@@ -45,9 +46,15 @@ export async function POST(request: NextRequest) {
 
     if (file) {
       try {
-        await uploadAttachment(TABLE_IDS.Gastos, record.id, "Archivo", file);
-      } catch {
-        console.error("Failed to upload attachment, record created without it");
+        const blob = await put(`gastos/${record.id}/${file.name}`, file, {
+          access: "public",
+        });
+
+        await updateRecord(TABLE_IDS.Gastos, record.id, {
+          Archivo: [{ url: blob.url }],
+        });
+      } catch (err) {
+        console.error("Failed to upload PDF:", err);
       }
     }
 

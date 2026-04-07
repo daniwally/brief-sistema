@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { listRecords, createRecord, uploadAttachment, TABLE_IDS } from "@/lib/airtable";
+import { put } from "@vercel/blob";
+import { listRecords, createRecord, updateRecord, TABLE_IDS } from "@/lib/airtable";
 import type { Factura } from "@/lib/types";
 
 type FacturaFields = Omit<Factura, "id">;
@@ -41,11 +42,19 @@ export async function POST(request: NextRequest) {
     const fields = JSON.parse(fieldsJson);
     const record = await createRecord<FacturaFields>(TABLE_IDS.Facturas, fields);
 
+    // Upload PDF to Vercel Blob, then attach URL to Airtable record
     if (file) {
       try {
-        await uploadAttachment(TABLE_IDS.Facturas, record.id, "Archivo", file);
-      } catch {
-        console.error("Failed to upload attachment, record created without it");
+        const blob = await put(`facturas/${record.id}/${file.name}`, file, {
+          access: "public",
+        });
+
+        // Update Airtable record with the attachment URL
+        await updateRecord(TABLE_IDS.Facturas, record.id, {
+          Archivo: [{ url: blob.url }],
+        });
+      } catch (err) {
+        console.error("Failed to upload PDF:", err);
       }
     }
 
