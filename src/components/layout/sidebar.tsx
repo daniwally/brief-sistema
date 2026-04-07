@@ -44,15 +44,11 @@ export function Sidebar() {
       <div className="p-3 lg:p-5 border-b border-violet-500/30">
         {/* Mobile: small logo */}
         <div className="lg:hidden flex justify-center">
-          <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center">
-            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={28} height={28} className="object-contain brightness-0 invert" />
-          </div>
+          <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={35} height={35} className="object-contain brightness-0 invert" />
         </div>
         {/* Desktop: logo + text */}
         <div className="hidden lg:flex flex-col items-center gap-3">
-          <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
-            <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={48} height={48} className="object-contain brightness-0 invert" />
-          </div>
+          <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={100} height={100} className="object-contain brightness-0 invert" />
           <div className="text-center">
             <h1 className="text-base font-bold text-white">Brief Sistema</h1>
             <p className="text-[10px] text-violet-200 uppercase tracking-widest">WTF Agency</p>
