@@ -82,6 +82,8 @@ export function FacturaTable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [hoveredPagoId, setHoveredPagoId] = useState<string | null>(null);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null);
   const [rates, setRates] = useState<Cotizaciones | null>(null);
   const [pagos, setPagos] = useState<PagoRecord[]>([]);
   const [pais, setPais] = useState("all");
@@ -284,7 +286,7 @@ export function FacturaTable() {
                     </TableCell>
                     <TableCell className="px-2 text-xs">{f.fields.Pais === "Argentina" ? "AR" : f.fields.Pais === "Chile" ? "CL" : f.fields.Pais === "Paraguay" ? "PY" : f.fields.Pais}</TableCell>
                     <TableCell className="px-2">
-                      <div className="relative group/estado">
+                      <div>
                         <StatusBadge
                           estado={f.fields.Estado as EstadoPago}
                           loading={togglingId === f.id}
@@ -293,57 +295,17 @@ export function FacturaTable() {
                           }
                         />
                         {pago && (
-                          <>
-                            <p className="text-[10px] text-emerald-600 mt-0.5">{formatDate(pago.fields.Fecha)}</p>
-                            <div className="absolute right-0 bottom-full mb-1 hidden group-hover/estado:block bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-30 w-72">
-                              <p className="text-xs font-semibold text-gray-700 mb-3">Resumen del pago</p>
-                              <div className="space-y-2 text-xs">
-                                <div className="flex justify-between">
-                                  <span className="text-gray-400">Pagador</span>
-                                  <span className="font-medium text-gray-700">{pago.fields.Pagador}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-gray-400">Fecha pago</span>
-                                  <span className="text-gray-700">{formatDate(pago.fields.Fecha)}</span>
-                                </div>
-                                {pago.fields.Descripcion && (
-                                  <div>
-                                    <span className="text-gray-400">Concepto</span>
-                                    <p className="text-gray-600 mt-0.5">{pago.fields.Descripcion}</p>
-                                  </div>
-                                )}
-                                <div className="pt-2 border-t border-gray-100 space-y-1.5">
-                                  {pago.fields.Neto != null && (
-                                    <div className="flex justify-between">
-                                      <span className="text-gray-400">Neto</span>
-                                      <span className="font-mono text-gray-700">{formatCurrency(pago.fields.Neto, pago.fields.Moneda as Moneda)}</span>
-                                    </div>
-                                  )}
-                                  {pago.fields.Impuestos != null && (
-                                    <div className="flex justify-between">
-                                      <span className="text-gray-400">Impuestos</span>
-                                      <span className="font-mono text-gray-700">{formatCurrency(pago.fields.Impuestos, pago.fields.Moneda as Moneda)}</span>
-                                    </div>
-                                  )}
-                                  <div className="flex justify-between font-semibold">
-                                    <span className="text-gray-500">Total</span>
-                                    <span className="font-mono text-emerald-600">{formatCurrency(pago.fields.Monto, pago.fields.Moneda as Moneda)}</span>
-                                  </div>
-                                </div>
-                                {pago.fields.DetalleImpuestos && (
-                                  <div className="pt-2 border-t border-gray-100">
-                                    <span className="text-gray-400 block mb-1">Detalle impuestos</span>
-                                    <ul className="space-y-0.5 text-gray-600">
-                                      {pago.fields.DetalleImpuestos.split(/[,;\n]/).map((item, i) => {
-                                        const trimmed = item.trim();
-                                        return trimmed ? <li key={i} className="flex items-start gap-1"><span className="text-gray-300 mt-px">-</span>{trimmed}</li> : null;
-                                      })}
-                                    </ul>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </>
+                          <p
+                            className="text-[10px] text-emerald-600 mt-0.5 cursor-default"
+                            onMouseEnter={(e) => {
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setPopoverPos({ top: rect.top, left: rect.left - 288 });
+                              setHoveredPagoId(f.id);
+                            }}
+                            onMouseLeave={() => setHoveredPagoId(null)}
+                          >
+                            {formatDate(pago.fields.Fecha)}
+                          </p>
                         )}
                       </div>
                     </TableCell>
@@ -378,6 +340,68 @@ export function FacturaTable() {
           </Table>
         </div>
       )}
+
+      {/* Fixed popover for pago details */}
+      {hoveredPagoId && popoverPos && (() => {
+        const fac = facturas.find((f) => f.id === hoveredPagoId);
+        const p = fac ? findPago(fac, pagos) : undefined;
+        if (!p) return null;
+        return (
+          <div
+            className="fixed bg-white border border-gray-200 rounded-xl shadow-xl p-4 z-50 w-72"
+            style={{ top: popoverPos.top - 8, left: popoverPos.left, transform: "translateY(-100%)" }}
+            onMouseEnter={() => setHoveredPagoId(hoveredPagoId)}
+            onMouseLeave={() => setHoveredPagoId(null)}
+          >
+            <p className="text-xs font-semibold text-gray-700 mb-3">Resumen del pago</p>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Pagador</span>
+                <span className="font-medium text-gray-700">{p.fields.Pagador}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Fecha pago</span>
+                <span className="text-gray-700">{formatDate(p.fields.Fecha)}</span>
+              </div>
+              {p.fields.Descripcion && (
+                <div>
+                  <span className="text-gray-400">Concepto</span>
+                  <p className="text-gray-600 mt-0.5">{p.fields.Descripcion}</p>
+                </div>
+              )}
+              <div className="pt-2 border-t border-gray-100 space-y-1.5">
+                {p.fields.Neto != null && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Neto</span>
+                    <span className="font-mono text-gray-700">{formatCurrency(p.fields.Neto, p.fields.Moneda as Moneda)}</span>
+                  </div>
+                )}
+                {p.fields.Impuestos != null && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Impuestos</span>
+                    <span className="font-mono text-gray-700">{formatCurrency(p.fields.Impuestos, p.fields.Moneda as Moneda)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-semibold">
+                  <span className="text-gray-500">Total</span>
+                  <span className="font-mono text-emerald-600">{formatCurrency(p.fields.Monto, p.fields.Moneda as Moneda)}</span>
+                </div>
+              </div>
+              {p.fields.DetalleImpuestos && (
+                <div className="pt-2 border-t border-gray-100">
+                  <span className="text-gray-400 block mb-1">Detalle impuestos</span>
+                  <ul className="space-y-0.5 text-gray-600">
+                    {p.fields.DetalleImpuestos.split(/[,;\n]/).map((item, i) => {
+                      const trimmed = item.trim();
+                      return trimmed ? <li key={i} className="flex items-start gap-1"><span className="text-gray-300 mt-px">-</span>{trimmed}</li> : null;
+                    })}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
