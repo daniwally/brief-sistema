@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { ExtractedInvoice } from "./types";
+import type { ExtractedInvoice, ExtractedPayment } from "./types";
 
 const client = new Anthropic();
 
@@ -80,4 +80,69 @@ export async function extractInvoiceData(pdfBase64: string): Promise<ExtractedIn
 
   const parsed = JSON.parse(text);
   return parsed as ExtractedInvoice;
+}
+
+const PAYMENT_EXTRACTION_PROMPT = `Sos un asistente que extrae datos de comprobantes de pago latinoamericanos.
+Extraé los siguientes campos de este PDF de comprobante de pago/transferencia. Devolvé SOLAMENTE JSON válido, sin markdown ni backticks:
+{
+  "monto": importe del pago como número,
+  "moneda": "ARS" | "CLP" | "PYG" | "USD",
+  "fecha": "YYYY-MM-DD",
+  "pagador": "nombre de quien realizó el pago",
+  "numero_factura": "número de factura que se está pagando, si se menciona",
+  "descripcion": "descripción o concepto del pago",
+  "pais": "Argentina" | "Chile" | "Paraguay"
+}
+Si un campo no se puede determinar, usá null.
+
+REGLAS PARA DETECTAR MONEDA:
+- Si ves "$" o "ARS" o "Pesos" en un comprobante argentino (tiene CBU/CVU/CUIT) → "ARS"
+- Si ves "$" o "CLP" o "Pesos" en un comprobante chileno (tiene RUT) → "CLP"
+- Si ves "Gs" o "PYG" o "Guaraníes" en un comprobante paraguayo → "PYG"
+- Si ves "US$" o "USD" o "Dólares" → "USD"
+
+REGLAS PARA DETECTAR PAÍS:
+- CBU, CVU, CUIT → Argentina
+- RUT con formato XX.XXX.XXX-X → Chile
+- RUC → Paraguay
+
+IMPORTANTE: Buscá cualquier referencia a número de factura en el concepto o descripción del pago.`;
+
+export async function extractPaymentData(pdfBase64: string): Promise<ExtractedPayment> {
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 1024,
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "document",
+            source: {
+              type: "base64",
+              media_type: "application/pdf",
+              data: pdfBase64,
+            },
+          },
+          {
+            type: "text",
+            text: PAYMENT_EXTRACTION_PROMPT,
+          },
+        ],
+      },
+    ],
+  });
+
+  const textContent = response.content.find((c) => c.type === "text");
+  if (!textContent || textContent.type !== "text") {
+    throw new Error("No text response from Claude");
+  }
+
+  let text = textContent.text.trim();
+  if (text.startsWith("```")) {
+    text = text.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+  }
+
+  const parsed = JSON.parse(text);
+  return parsed as ExtractedPayment;
 }

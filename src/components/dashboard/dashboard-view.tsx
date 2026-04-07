@@ -183,7 +183,37 @@ export function DashboardView() {
         </div>
       ) : (
         <>
-          {/* Pending alerts */}
+          {/* Monthly total + Pending alerts */}
+          {(() => {
+            const mesLabel = new Date().toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+            let totalUsdMes = 0;
+            if (rates && data.facturacionMes) {
+              for (const m of MONEDAS) {
+                const val = data.facturacionMes[m] || 0;
+                if (val > 0) totalUsdMes += toUsd(val, m, rates);
+              }
+            }
+            return (
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-gray-400 uppercase tracking-wide">Facturacion {mesLabel}</p>
+                </div>
+                <p className="text-4xl font-bold text-emerald-600 font-mono">
+                  {formatUsd(totalUsdMes)}
+                </p>
+                {data.facturacionMes && (
+                  <div className="flex flex-wrap gap-3 mt-3">
+                    {MONEDAS.filter((m) => (data.facturacionMes[m] || 0) > 0).map((m) => (
+                      <span key={m} className="text-xs text-gray-500 font-mono">
+                        {formatCurrency(data.facturacionMes[m], m)}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Facturas Impagas</p>

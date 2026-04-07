@@ -7,6 +7,7 @@ export const TABLE_IDS = {
   Facturas: "tblc5An5TrhxzyBMU",
   Gastos: "tbl3DdSPn3G71yUDl",
   Categorias: "tblp1nn7PjBjsUbEM",
+  Pagos: "tblwkurZVkCOypl8I",
 } as const;
 
 export function checkConfig() {

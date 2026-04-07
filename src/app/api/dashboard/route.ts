@@ -65,6 +65,22 @@ export async function GET(request: NextRequest) {
     const facturasImpagas = facturas.filter((f) => f.fields.Estado === "Impago").length;
     const gastosImpagos = gastos.filter((g) => g.fields.Estado === "Impago").length;
 
+    // Facturacion del mes en curso por moneda
+    const now = new Date();
+    const mesActual = now.getMonth();
+    const anioActual = now.getFullYear();
+    const facturacionMes: Record<string, number> = {};
+    for (const m of MONEDAS) facturacionMes[m] = 0;
+
+    for (const f of facturas) {
+      if (f.fields.Fecha && f.fields.Moneda && f.fields.Monto) {
+        const fecha = new Date(f.fields.Fecha + "T00:00:00");
+        if (fecha.getMonth() === mesActual && fecha.getFullYear() === anioActual) {
+          facturacionMes[f.fields.Moneda] += f.fields.Monto;
+        }
+      }
+    }
+
     const data: DashboardData = {
       ingresos,
       gastos: gastosTotal,
@@ -73,6 +89,7 @@ export async function GET(request: NextRequest) {
         facturas_impagas: facturasImpagas,
         gastos_impagos: gastosImpagos,
       },
+      facturacionMes,
     };
 
     return Response.json(data);

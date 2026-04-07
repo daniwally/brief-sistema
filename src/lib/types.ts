@@ -64,6 +64,7 @@ export interface DashboardData {
     facturas_impagas: number;
     gastos_impagos: number;
   };
+  facturacionMes: Record<string, number>;
 }
 
 export interface ExtractedInvoice {
@@ -78,6 +79,29 @@ export interface ExtractedInvoice {
   cuit_rut_ruc: string | null;
   cliente: string | null;
   cuit_rut_ruc_cliente: string | null;
+  descripcion: string | null;
+  pais: "Argentina" | "Chile" | "Paraguay" | null;
+}
+
+export interface Pago {
+  id: string;
+  Monto: number;
+  Moneda: "ARS" | "CLP" | "PYG" | "USD";
+  Fecha: string;
+  Pagador: string;
+  FacturaRef: string | null;
+  Descripcion: string | null;
+  Pais: "Argentina" | "Chile" | "Paraguay";
+  Archivo?: AirtableAttachment[];
+  Notas?: string | null;
+}
+
+export interface ExtractedPayment {
+  monto: number | null;
+  moneda: "ARS" | "CLP" | "PYG" | "USD" | null;
+  fecha: string | null;
+  pagador: string | null;
+  numero_factura: string | null;
   descripcion: string | null;
   pais: "Argentina" | "Chile" | "Paraguay" | null;
 }
