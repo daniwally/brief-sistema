@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -28,27 +29,6 @@ const navItems = [
   },
 ];
 
-function WtfLogo({ size = 48 }: { size?: number }) {
-  const r = size * 0.22; // circle radius
-  const f = size * 0.18; // font size
-  return (
-    <svg width={size} height={size * 1.15} viewBox="0 0 100 115" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* W */}
-      <circle cx="30" cy="22" r="20" fill="black" />
-      <text x="30" y="22" textAnchor="middle" dominantBaseline="central" fill="white" fontSize={f} fontWeight="700" fontFamily="var(--font-inter), Inter, sans-serif">W</text>
-      {/* T */}
-      <circle cx="22" cy="55" r="20" fill="black" />
-      <text x="22" y="55" textAnchor="middle" dominantBaseline="central" fill="white" fontSize={f} fontWeight="700" fontFamily="var(--font-inter), Inter, sans-serif">T</text>
-      {/* F */}
-      <circle cx="58" cy="48" r="20" fill="black" />
-      <text x="58" y="48" textAnchor="middle" dominantBaseline="central" fill="white" fontSize={f} fontWeight="700" fontFamily="var(--font-inter), Inter, sans-serif">F</text>
-      {/* ¿ */}
-      <circle cx="42" cy="85" r="16" fill="black" />
-      <text x="42" y="86" textAnchor="middle" dominantBaseline="central" fill="white" fontSize={f * 0.9} fontWeight="700" fontFamily="var(--font-inter), Inter, sans-serif">¿</text>
-    </svg>
-  );
-}
-
 export function Sidebar() {
   const pathname = usePathname();
 
@@ -57,11 +37,11 @@ export function Sidebar() {
       <div className="p-3 lg:p-5 border-b">
         {/* Mobile: small logo */}
         <div className="lg:hidden flex justify-center">
-          <WtfLogo size={32} />
+          <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={32} height={32} className="object-contain" />
         </div>
         {/* Desktop: logo + text */}
         <div className="hidden lg:flex flex-col items-center gap-3">
-          <WtfLogo size={52} />
+          <Image src="/logo-wtf-negro.png" alt="WTF Agency" width={80} height={80} className="object-contain" />
           <div className="text-center">
             <h1 className="text-base font-bold text-gray-900">Brief Sistema</h1>
             <p className="text-[10px] text-gray-400 uppercase tracking-widest">WTF Agency</p>
